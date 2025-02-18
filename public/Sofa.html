@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация и Авторизация</title>
+    <link rel="stylesheet" href="Sofa.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+</head>
+<body>
+<div id="app">
+    <div id="notifications" class="notifications"></div>
+    <div class="container">
+        <h2>Регистрация автора</h2>
+        <div class="form-section">
+            <form @submit.prevent="submitAuthorForm">
+                <label for="author-login">Логин:</label>
+                <input type="text" id="author-login" name="author-login" required>
+
+                <label for="author-email">Почта:</label>
+                <input type="email" id="author-email" name="author-email" required>
+
+                <label for="author-password">Пароль:</label>
+                <input type="password" id="author-password" name="author-password" required>
+
+                <label for="author-password-repeat">Повторение пароля:</label>
+                <input type="password" id="author-password-repeat" name="author-password-repeat" required>
+
+                <label for="author-nickname">Ник автора:</label>
+                <input type="text" id="author-nickname" name="author-nickname" required>
+
+                <label for="author-vk">Ссылка на ВК:</label>
+                <input type="url" id="author-vk" name="author-vk" required>
+
+                <input type="submit" value="Зарегистрировать автора">
+            </form>
+        </div>
+
+        <h2>Регистрация пользователя</h2>
+        <div class="form-section">
+            <form @submit.prevent="submitUserForm">
+                <label for="user-login">Логин:</label>
+                <input type="text" id="user-login" name="user-login" required>
+
+                <label for="user-email">Почта:</label>
+                <input type="email" id="user-email" name="user-email" required>
+
+                <label for="user-password">Пароль:</label>
+                <input type="password" id="user-password" name="user-password" required>
+
+                <label for="user-password-repeat">Повторение пароля:</label>
+                <input type="password" id="user-password-repeat" name="user-password-repeat" required>
+
+                <input type="submit" value="Зарегистрировать пользователя">
+            </form>
+        </div>
+
+        <h2>Авторизация</h2>
+        <div class="form-section">
+            <form @submit.prevent="submitLogInForm">
+                <label for="auth-email-login-nickname">Почта/Логин/Ник автора:</label>
+                <input type="text" id="auth-email-login-nickname" name="auth-email-login-nickname" required>
+
+                <label for="auth-password">Пароль:</label>
+                <input type="password" id="auth-password" name="auth-password" required>
+
+                <input type="submit" value="Войти">
+            </form>
+        </div>
+    </div>
+</div>
+<script src="scripts/Sofa.js"></script>
+</body>
+</html>
