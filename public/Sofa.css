@@ -1,20 +1,81 @@
+html {
+    scroll-padding-top: 80px;
+    scroll-behavior: smooth;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
     margin: 0;
-    padding: 20px;
+    font-family: Arial, sans-serif;
+    background-color: #ffffff;
+    color: black;
 }
-.container {
-    max-width: 600px;
-    margin: auto;
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+a {
+    text-decoration: none;
+    color: #818181;
+    margin: 15px;
 }
-h2 {
+
+a:hover {
+    color: black;
+    cursor: pointer;
+}
+
+h1, h2, p {
+    margin: 0;
+}
+
+header {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: #ffffff;
+    color: black;
+    padding: 26px 40px;
     text-align: center;
-    color: #333;
+    font-size: 1.2em;
+    z-index: 5;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);   
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.logo {
+    font-size: 1.7em;
+    font-weight: bold;
+}
+
+.buttons{
+    display: flex;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 200px;
+    height: 100%;
+    background-color: #ffffff;
+    color: black;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+    padding-top: 20px;
+    opacity: 0;
+    transform: translateX(-100%);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+    z-index: 6;
+}
+
+.sidebar.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
 }
 
 .notifications {
@@ -40,37 +101,196 @@ h2 {
     background-color: #F44336;
 }
 
-form {
+.menu-button {
+    display: none;
+}
+
+main {
+    background-color: #ffffff;
+    min-height:50em;
+}
+
+.background-section {
+    background-image: url('https://losko.ru/wp-content/uploads/2019/11/7702b9faef4382f33090b0b87b2c0ad0-1.jpg');
+    border-radius:50px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 40vh;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+
+.main-elements {
     display: flex;
     flex-direction: column;
-}
-label {
-    margin: 10px 0 5px;
-    color: #555;
-}
-input[type="text"],
-input[type="email"],
-input[type="password"],
-input[type="url"] {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    margin-bottom: 15px;
-}
-input[type="submit"] {
-    padding: 10px;
-    background-color: #28a745;
+    height: 100%;
     color: white;
-    border: none;
-    border-radius: 4px;
+}
+
+.main-big-text {
+    padding-top:30px ;
+    font-size: 5em;
+    margin-bottom: auto;
+}
+
+footer {
+    text-align: center;
+    padding-bottom: 10px;
+    background-color: #ffffff;
+    color: black;
+    font-size: large;
+}
+
+.modal{
+    background-color: rgba(0, 0, 0, 0.4);
+    height: 100%;
+    left: 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    visibility: hidden;
+    z-index: 7;
+}
+
+.modal-content {
+    height: fit-content;
+    background-color: #fff;
+    color: #000000;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 40px 30px 20px 30px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    animation: fadeIn 0.3s;
+}
+
+.password-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-container input {
+    width: 100%;
+    padding-right: 40px; /* Отступ для ссылки */
+}
+
+form {
+    display: grid;
+    grid-row-gap: 10px;
+}
+
+.close {
+    margin-left: 3px;
+    float: right;
+    font-size: 30px;
+    font-weight: bold;
+    color: #aaa;
     cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    text-align: center;
+    font-size: 27px;
+}
+
+.modal-content p{
+    text-align: center;
+}
+
+.modal-content label {
+    margin-top: 15px;
+}
+
+.modal-content input {
+    padding: 12px 15px;
+    margin-top: 5px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
     font-size: 16px;
 }
-input[type="submit"]:hover {
-    background-color: #218838;
+
+.modal-content input:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 2px #0056b3;
 }
-.form-section {
-    margin-bottom: 40px;
+.modal-content .button-container{
+    display: flex;
+}
+.modal-content button {
+    margin: 10px auto 0 auto;
+    padding: 12px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+}
+
+.modal-content button:hover {
+    background-color: #fff;
+    color: #0056b3;
+    border: 2px solid #0056b3;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content a {
+    text-align: center;
+}
+
+.eye-link {
+    position: absolute;
+    right: 10px; /* Расположение ссылки внутри поля */
+    text-decoration: none; /* Убираем подчеркивание */
+    font-size: 18px; /* Размер иконки */
+    cursor: pointer; /* Курсор при наведении */
 }
 
 
+
+@media screen and (max-width: 748px) {
+    header{
+        padding: 0px 40px;
+    }
+    .sidebar.active {
+        display: block;
+        transform: translateX(0);
+    }
+
+    .menu-button {
+        display: block;
+    }
+
+    .header-content{
+        display: contents;
+    }
+
+    .buttons {
+        display: none;
+    }
+
+    nav{
+        display: grid;
+    }
+    
+    .main-big-text {
+        padding-top:30px ;
+        font-size: 3em;
+    }
+}

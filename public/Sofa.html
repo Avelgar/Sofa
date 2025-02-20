@@ -3,71 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Регистрация и Авторизация</title>
+    <title>Sofa</title>
     <link rel="stylesheet" href="Sofa.css">
     <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
 </head>
 <body>
 <div id="app">
     <div id="notifications" class="notifications"></div>
-    <div class="container">
-        <h2>Регистрация автора</h2>
-        <div class="form-section">
-            <form @submit.prevent="submitAuthorForm">
-                <label for="author-login">Логин:</label>
-                <input type="text" id="author-login" name="author-login" required>
+    <header>
+        <div class="header-content">
+            <div style="display: flex;">
+                <div class="logo">Sofa</div>
+                <div class="buttons">
+                    <a style="text-decoration: underline; color:black">Магазин</a>
+                    <a @click.prevent="openLogInModal">Войти</a>
+                    <a @click.prevent="openUserModal" >Зарегистрироваться</a>
+                </div>
+            </div>
+            <div>
+                <input type="text" id="searchInput" placeholder="Поиск..." />
+            </div>
+            <a id="menuToggle" class="menu-button">Меню</a>
+        </div>
+    </header>
 
-                <label for="author-email">Почта:</label>
-                <input type="email" id="author-email" name="author-email" required>
+    <aside id="sidebar" class="sidebar">
+        <nav>
+            <a style="text-decoration: underline; color:black">Магазин</a>
+            <a @click.prevent="openLogInModal">Войти</a>
+            <a @click.prevent="openUserModal">Зарегистрироваться</a>
+        </nav>
+    </aside>
+    <div id="notifications" class="notifications"></div>
+    <main>
+        <section class="background-section">
+            <div class="main-elements">
+                <h1 class="main-big-text">Sofa: Магазин для художников</h1>
+            </div>            
+        </section>
+        <div id="symbols-container" class="symbols-container"></div>
+        <!-- Добавляй код сюда! -->
 
-                <label for="author-password">Пароль:</label>
-                <input type="password" id="author-password" name="author-password" required>
-
-                <label for="author-password-repeat">Повторение пароля:</label>
-                <input type="password" id="author-password-repeat" name="author-password-repeat" required>
-
-                <label for="author-nickname">Ник автора:</label>
-                <input type="text" id="author-nickname" name="author-nickname" required>
-
-                <label for="author-vk">Ссылка на ВК:</label>
-                <input type="url" id="author-vk" name="author-vk" required>
-
-                <input type="submit" value="Зарегистрировать автора">
-            </form>
+        <!-- Дальше идут модальные окна! -->
+        <div v-if="isUserModalOpen" class="modal" @mousedown="handleMouseDown" @mouseup="handleMouseUp">
+            <div class="modal-content" @click.stop>
+                <span class="close" @click="closeUserModal">&times;</span>
+                <h2>Зарегистрироваться в Sofa</h2>
+                <p>С помощью электронной почты</p>
+                <div class="button-container">
+                    <button type="button" style="background-color: #fff; color: #0056b3;  border: 2px solid #0056b3; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);">Покупатель</button>
+                    <button type="button" @click.prevent="openAuthorModal">Мерчедел</button>
+                </div>
+                <form id="UserForm" @submit.prevent="submitUserForm">
+                    <label for="login">Логин</label>
+                    <input type="login" id="user-login" required>
+        
+                    <label for="email">Электронная почта</label>
+                    <input type="email" id="user-email" required>
+        
+                    <label for="password">Пароль</label>
+                    <div class="password-container">
+                        <input :type="isPasswordVisible ? 'text' : 'password'" id="user-password" required>
+                        <a href="#" @click.prevent="togglePasswordVisibility" class="eye-link">
+                            <span v-if="isPasswordVisible">👁️</span>
+                            <span v-else>👁️‍🗨️</span>
+                        </a>
+                    </div>
+        
+                    <label for="password">Подтвердите пароль</label>
+                    <div class="password-container">
+                        <input :type="isPassword2Visible ? 'text' : 'password'" id="user-password-repeat" required>
+                        <a href="#" @click.prevent="togglePassword2Visibility" class="eye-link">
+                            <span v-if="isPassword2Visible">👁️</span>
+                            <span v-else>👁️‍🗨️</span>
+                        </a>
+                    </div>
+        
+                    <button type="submit">Зарегистрироваться</button>
+        
+                    <!-- <a href="#" @click.prevent="openLogInModal">Уже есть аккаунт?</a> -->
+                </form>
+            </div>
         </div>
 
-        <h2>Регистрация пользователя</h2>
-        <div class="form-section">
-            <form @submit.prevent="submitUserForm">
-                <label for="user-login">Логин:</label>
-                <input type="text" id="user-login" name="user-login" required>
-
-                <label for="user-email">Почта:</label>
-                <input type="email" id="user-email" name="user-email" required>
-
-                <label for="user-password">Пароль:</label>
-                <input type="password" id="user-password" name="user-password" required>
-
-                <label for="user-password-repeat">Повторение пароля:</label>
-                <input type="password" id="user-password-repeat" name="user-password-repeat" required>
-
-                <input type="submit" value="Зарегистрировать пользователя">
-            </form>
+        <div v-if="isLogInModalOpen" class="modal"@mousedown="handleMouseDown" @mouseup="handleMouseUp"> 
+            <div class="modal-content" @click.stop>
+                <span class="close" @click="closeLogInModal">&times;</span>
+                <h2>Войти в Sofa</h2>
+                <form id="LogInForm" @submit.prevent="submitLogInForm">
+                    <label for="login">Электронная почта/Логин</label>
+                    <input id="auth-email-login-nickname" required>
+                    <label for="password">Пароль</label>
+                    <div class="password-container">
+                        <input :type="isPasswordLoginVisible ? 'text' : 'password'" id="auth-password" required>
+                        <a href="#" @click.prevent="togglePasswordLoginVisibility" class="eye-link">
+                            <span v-if="isPasswordLoginVisible">👁️</span>
+                            <span v-else>👁️‍🗨️</span>
+                        </a>
+                    </div>
+                    <!-- <label style="width:fit-content">
+                        <input type="checkbox" id="rememberMe">
+                        Запомнить меня
+                    </label> -->
+                    <button type="submit">Войти</button>
+                    <!-- <a href="#" @click.prevent="openCapchaModal">Забыли пароль?</a> -->
+                </form>
+            </div>
         </div>
-
-        <h2>Авторизация</h2>
-        <div class="form-section">
-            <form @submit.prevent="submitLogInForm">
-                <label for="auth-email-login-nickname">Почта/Логин/Ник автора:</label>
-                <input type="text" id="auth-email-login-nickname" name="auth-email-login-nickname" required>
-
-                <label for="auth-password">Пароль:</label>
-                <input type="password" id="auth-password" name="auth-password" required>
-
-                <input type="submit" value="Войти">
-            </form>
-        </div>
-    </div>
+    </main>
+    
+    <footer>
+        <p>&copy; 2025 Sofa. Все права защищены.</p>
+    </footer>
 </div>
 <script src="scripts/Sofa.js"></script>
 </body>
