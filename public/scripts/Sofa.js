@@ -21,6 +21,7 @@ new Vue({
         isMouseDownOnModal: false,
         isMouseDownOnBackdrop: false,
         isUserModalOpen: false,
+        userType: 'buyer',
         isLogInModalOpen: false,
         isPasswordVisible: false,
         isPassword2Visible: false,
@@ -59,26 +60,38 @@ new Vue({
         openUserModal() {  
             this.isUserModalOpen = true;
         },
+        selectUserType(type) {
+            this.userType = type; // Устанавливаем тип пользователя
+        },
         submitUserForm() {
             const login = document.getElementById('user-login').value;
             const email = document.getElementById('user-email').value;
             const password = document.getElementById('user-password').value;
             const password_repeat = document.getElementById('user-password-repeat').value;
+            let authorNickname = '';
+            let authorVk = '';
+            
+            if (this.userType === 'merchant') {
+                authorNickname = document.getElementById('author-nickname').value;
+                authorVk = document.getElementById('author-vk').value;
+            }
         
             if (password !== password_repeat) {
                 this.showNotification('Пароли не совпадают!', 'error');
                 return;
             }
         
-            fetch('/SignUpUser', {
+            fetch('/SignUpUser ', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    login: login,
-                    email: email,
-                    password: password,
+                    Login: login,
+                    Email: email,
+                    Password: password,
+                    Nickname: authorNickname || null,
+                    AuthorVk: authorVk || null,
                 }),
             })
             .then(response => {
@@ -86,10 +99,16 @@ new Vue({
                     return response.text().then(text => {
                         if (text.includes('PasswordIsTooWeak')) {
                             return this.showNotification('Пароль слишком слабый.', 'error');
-                        } else if (text.includes('UserAlreadyExistsWithEmail')) {
+                        } else if (text.includes('UserAlreadyWithEmail')) {
                             return this.showNotification('Пользователь с таким email уже существует.', 'error');
                         } else if (text.includes('UserAlreadyExistsWithLogin')) {
-                            return this.showNotification('Это имя пользователя уже занято', 'error');
+                            return this.showNotification('Это имя пользователя уже занято.', 'error');
+                        } else if (text.includes('NicknameAlreadyExists')) {
+                            return this.showNotification('Этот никнейм уже занят.', 'error');
+                        } else if (text.includes('AuthorVkAlreadyExists')) {
+                            return this.showNotification('Эта ссылка на VK уже занята.', 'error');
+                        } else if (text.includes('UserAlreadySignUp')) {
+                            return this.showNotification('Пользователь уже зарегистрирован на сайте.', 'error');
                         } else if (text.includes('Badrequest')) {
                             return this.showNotification('Ошибка базы данных. Попробуйте позже.', 'error');
                         } else if (text.includes('InternalServerError')) {
@@ -98,31 +117,30 @@ new Vue({
                             return this.showNotification('Неизвестная ошибка. Попробуйте снова.', 'error');
                         }
                     });
-                }
-                else{
-                    this.showNotification('Подтвердите аккаунта в своем почтовом ящике!', 'success');
+                } else {
+                    this.showNotification('Подтвердите аккаунт в своем почтовом ящике!', 'success');
                 }
             })
             .catch((error) => {
                 console.error('Ошибка:', error);
                 this.showNotification('Ошибка регистрации. Попробуйте еще раз.', 'error');
             });
-        },
+        },        
         closeUserModal(){
             this.isUserModalOpen = false;
         },
         openLogInModal() {
-            // this.closeSignUpModal();
+            this.closeUserModal();
             this.isLogInModalOpen = true;
-            // const signUpLogin = document.getElementById('SignUpLogin');
-            // const signUpEmail = document.getElementById('SignUpEmail');
-            // const signUpPassword = document.getElementById('SignUpPassword');
-            // const signUpPassword2 = document.getElementById('SignUpPassword2');
+            const signUpLogin = document.getElementById('user-login');
+            const signUpEmail = document.getElementById('user-email');
+            const signUpPassword = document.getElementById('user-password');
+            const signUpPassword2 = document.getElementById('user-password-repeat');
         
-            // if (signUpLogin) signUpLogin.value = '';
-            // if (signUpEmail) signUpEmail.value = '';
-            // if (signUpPassword) signUpPassword.value = '';
-            // if (signUpPassword2) signUpPassword2.value = '';
+            if (signUpLogin) signUpLogin.value = '';
+            if (signUpEmail) signUpEmail.value = '';
+            if (signUpPassword) signUpPassword.value = '';
+            if (signUpPassword2) signUpPassword2.value = '';
         },
         submitLogInForm() {
             const login = document.getElementById('auth-email-login-nickname').value;
@@ -167,63 +185,6 @@ new Vue({
         },
         closeLogInModal(){
             this.isLogInModalOpen = false;
-        },
-        submitAuthorForm() {
-            const login = document.getElementById('author-login').value;
-            const email = document.getElementById('author-email').value;
-            const password = document.getElementById('author-password').value;
-            const password_repeat = document.getElementById('author-password-repeat').value;
-            const nickname = document.getElementById('author-nickname').value;
-            const author_vk = document.getElementById('author-vk').value;
-        
-            if (password !== password_repeat) {
-                this.showNotification('Пароли не совпадают!', 'error');
-                return;
-            }
-        
-            fetch('/SignUpAuthor', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    login: login,
-                    email: email,
-                    password: password,
-                    nickname: nickname,
-                    author_vk: author_vk
-                }),
-            })
-            .then(response => {
-                if (!response.ok) {
-                    return response.text().then(text => {
-                        if (text.includes('PasswordIsTooWeak')) {
-                            return this.showNotification('Пароль слишком слабый.', 'error');
-                        } else if (text.includes('UserAlreadyWithEmail')) {
-                            return this.showNotification('Пользователь с таким email уже существует.', 'error');
-                        } else if (text.includes('UserAlreadyExistsWithLogin')) {
-                            return this.showNotification('Это имя пользователя уже занято', 'error');
-                        } else if (text.includes('UserAlreadyExistsWithNickname')) {
-                            return this.showNotification('Это имя пользователя уже занято', 'error');
-                        } else if (text.includes('UserAlreadyExistsWithAuthorVk')) {
-                            return this.showNotification('Это имя пользователя уже занято', 'error');
-                        } else if (text.includes('Badrequest')) {
-                            return this.showNotification('Ошибка базы данных. Попробуйте позже.', 'error');
-                        } else if (text.includes('InternalServerError')) {
-                            return this.showNotification('Ошибка сервера. Попробуйте позже.', 'error');
-                        } else {
-                            return this.showNotification('Неизвестная ошибка. Попробуйте снова.', 'error');
-                        }
-                    });
-                }
-                else{
-                    this.showNotification('Подтвердите аккаунта в своем почтовом ящике!', 'success');
-                }
-            })
-            .catch((error) => {
-                console.error('Ошибка:', error);
-                this.showNotification('Ошибка регистрации. Попробуйте еще раз.', 'error');
-            });
         },
         togglePasswordVisibility() {
             this.isPasswordVisible = !this.isPasswordVisible;

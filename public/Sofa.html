@@ -51,8 +51,8 @@
                 <h2>Зарегистрироваться в Sofa</h2>
                 <p>С помощью электронной почты</p>
                 <div class="button-container">
-                    <button type="button" style="background-color: #fff; color: #0056b3;  border: 2px solid #0056b3; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);">Покупатель</button>
-                    <button type="button" @click.prevent="openAuthorModal">Мерчедел</button>
+                    <button type="button" @click="selectUserType('buyer')">Покупатель</button>
+                    <button type="button" @click="selectUserType('merchant')">Мерчедел</button>
                 </div>
                 <form id="UserForm" @submit.prevent="submitUserForm">
                     <label for="login">Логин</label>
@@ -79,12 +79,21 @@
                         </a>
                     </div>
         
+                    <div style = "display: grid;"v-if="userType === 'merchant'">
+                        <label for="author-nickname">Ник автора:</label>
+                        <input type="text" id="author-nickname" name="author-nickname" required>
+        
+                        <label for="author-vk">Ссылка на ВК:</label>
+                        <input type="url" id="author-vk" name="author-vk" required>
+                    </div>
+        
                     <button type="submit">Зарегистрироваться</button>
         
-                    <!-- <a href="#" @click.prevent="openLogInModal">Уже есть аккаунт?</a> -->
+                    <a href="#" @click.prevent="openLogInModal">Уже есть аккаунт?</a>
                 </form>
             </div>
         </div>
+        
 
         <div v-if="isLogInModalOpen" class="modal"@mousedown="handleMouseDown" @mouseup="handleMouseUp"> 
             <div class="modal-content" @click.stop>
