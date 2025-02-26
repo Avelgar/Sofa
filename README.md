@@ -39,7 +39,11 @@ psql -U postgres
 ```
 CREATE DATABASE sofa;
 ```
-7. В Command Promt написать следующую команду
+7. Перезапустите CMD и напишите следующую команду
+```
+psql -U postgres -d sofa
+```
+8. В Command Promt написать следующую команду
 ```
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
@@ -51,7 +55,7 @@ CREATE TABLE users (
     author_vk TEXT
 );
 ```
-7.1 В Command Promt написать следующую команду
+8.1 В Command Promt написать следующую команду
 ```
 CREATE TABLE goods (
     id SERIAL PRIMARY KEY,          
@@ -60,7 +64,7 @@ CREATE TABLE goods (
     photo VARCHAR(255)              
 );
 ```
-7.2 В Command Promt написать следующую команду
+8.2 В Command Promt написать следующую команду
 ```
 INSERT INTO goods (name, price, photo) VALUES
 ('Футболка "Classic"', 19.99, 'https://cdn1.ozone.ru/s3/multimedia-4/c600/6545345860.jpg'),
@@ -70,13 +74,13 @@ INSERT INTO goods (name, price, photo) VALUES
 ('Часы "Elegance"', 99.99, 'https://avatars.mds.yandex.net/i?id=01eb045da1ed7ff4cb50b2b9f7849b26_l-12445014-images-thumbs&n=13');
 ```
 
-8. В Command Promt написать следующую команду и закрыть Command Promt
+9. В Command Promt написать следующую команду и закрыть Command Promt
 ```
 /q
 ```
-9. Открыть приложение pgAdmin 4.
-10. Найти базу данных sofa в выпадающем списке слева и развернуть её -> развернуть Schemas -> развернуть public -> развернуть Tables
-11. Найти users и нажать пкм -> View/Edit Data -> All Rows -> В окне справа появится таблица, обновляйте её видимость с помощью View/Edit Data.
+10. Открыть приложение pgAdmin 4.
+11. Найти базу данных sofa в выпадающем списке слева и развернуть её -> развернуть Schemas -> развернуть public -> развернуть Tables
+12. Найти users и нажать пкм -> View/Edit Data -> All Rows -> В окне справа появится таблица, обновляйте её видимость с помощью View/Edit Data.
 > Если у вас возникла проблема то попробуйте перечитать инструкцию, проверить версию PostgreSQL
 > ```
 > psql --version
@@ -86,39 +90,39 @@ INSERT INTO goods (name, price, photo) VALUES
 > ```
 > C:\Program Files\PostgreSQL\<версия(например 14)>\bin
 > ```
-12. Скачать GO с официального сайта https://go.dev/dl/
-13. Запустить установищик GO и установить на диск с проектом
-14. Открыть vs code
-15. Открыть в vs code папку с проектом(File -> Open Folder)
-16. Открыть терминал(убедитесь, что путь в терминале ведет к папке с проектом)
-17. Написать команду в терминале
+13. Скачать GO с официального сайта https://go.dev/dl/
+14. Запустить установищик GO и установить на диск с проектом
+15. Открыть vs code
+16. Открыть в vs code папку с проектом(File -> Open Folder)
+17. Открыть терминал(убедитесь, что путь в терминале ведет к папке с проектом)
+18. Написать команду в терминале
 ```
 go version
 ```
 > Вы должны увидеть версию GO, например go version go1.23.4 windows/amd64
-18. Написать команду в терминале
+19. Написать команду в терминале
 ```
 go mod init server.go
 ```
 > Создает go.mod
-19. Написать команду в терминале
+20. Написать команду в терминале
 ```
 go get github.com/lib/pq
 ```
 > Создает go.sum
 
-20. Написать команду в терминале
+21. Написать команду в терминале
 ```
 go run server.go
 ```
 > Запускает проект
-21. Перейти во вкладку ports рядом с терминалом
-22. Нажать Forward a Port
-23. Написать в поле Port
+22. Перейти во вкладку ports рядом с терминалом
+23. Нажать Forward a Port
+24. Написать в поле Port
 ```
 8080
 ``` 
-24. Нажать Enter
-25. Перейти по ссылке предоставленной в Forwarded Address
+25. Нажать Enter
+26. Перейти по ссылке предоставленной в Forwarded Address
 
 Если у вас возникли проблемы с установкой, то перечитайте инструкцию, спросите чат гпт или напишите Кириллу(В крайнем случае).
