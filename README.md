@@ -51,6 +51,25 @@ CREATE TABLE users (
     author_vk TEXT
 );
 ```
+7.1 В Command Promt написать следующую команду
+```
+CREATE TABLE goods (
+    id SERIAL PRIMARY KEY,          
+    name VARCHAR(255) NOT NULL,     
+    price DECIMAL(10, 2) NOT NULL,  
+    photo VARCHAR(255)              
+);
+```
+7.2 В Command Promt написать следующую команду
+```
+INSERT INTO goods (name, price, photo) VALUES
+('Футболка "Classic"', 19.99, 'https://cdn1.ozone.ru/s3/multimedia-4/c600/6545345860.jpg'),
+('Джинсы "Slim Fit"', 49.99, 'https://i.pinimg.com/736x/d3/3c/54/d33c541e21d5b3ac97738d4f5e025d7c.jpg'),
+('Кроссовки "Runner"', 59.99, 'https://cdn1.ozone.ru/s3/multimedia-1-w/6979871804.jpg'),
+('Рюкзак "Urban"', 39.99, 'https://avatars.mds.yandex.net/i?id=e9f271c41c545d9f3077644a44db3773_l-10242163-images-thumbs&n=13'),
+('Часы "Elegance"', 99.99, 'https://avatars.mds.yandex.net/i?id=01eb045da1ed7ff4cb50b2b9f7849b26_l-12445014-images-thumbs&n=13');
+```
+
 8. В Command Promt написать следующую команду и закрыть Command Promt
 ```
 /q
