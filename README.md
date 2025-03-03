@@ -52,7 +52,8 @@ CREATE TABLE users (
     password VARCHAR(100) NOT NULL,
     is_banned BOOLEAN DEFAULT FALSE,
     nickname TEXT,
-    author_vk TEXT
+    sign_up_token VARCHAR(255),
+    sign_up_token_del_time TIMESTAMP
 );
 ```
 8.1 В Command Promt написать следующую команду
