@@ -53,7 +53,9 @@ CREATE TABLE users (
     is_banned BOOLEAN DEFAULT FALSE,
     nickname TEXT,
     sign_up_token VARCHAR(255),
-    sign_up_token_del_time TIMESTAMP
+    sign_up_token_del_time TIMESTAMP,
+    recovery_token VARCHAR(255),
+    recovery_token_del_time TIMESTAMP
 );
 ```
 8.1 В Command Promt написать следующую команду
