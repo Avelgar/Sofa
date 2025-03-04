@@ -112,6 +112,7 @@ go mod init server.go
 20. Написать команду в терминале
 ```
 go get github.com/lib/pq
+go get github.com/gorilla/sessions
 ```
 > Создает go.sum
 
