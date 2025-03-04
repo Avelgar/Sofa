@@ -12,6 +12,52 @@ document.addEventListener('DOMContentLoaded', function() {
             sidebar.classList.remove('active');
         }
     });
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+
+    if (token) {
+        fetch('/api/checkToken', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ token: token })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Ошибка при проверке токена");
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                window.location.href = "/public/Sofa.html";
+            } else {
+                alert("Токен просрочен или недействителен.");
+                window.location.href = "/public/Sofa.html"; 
+            }
+        })
+        .catch(error => {
+            console.error("Ошибка:", error);
+            alert("Произошла ошибка при проверке токена.");
+            window.location.href = "/public/Sofa.html";
+        });
+    }
+    else{
+        fetch('/api/checkCookie')
+        .then(response => {
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                window.location.href = "/public/User.html";
+            }
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+    }
 });
 
 
@@ -25,7 +71,8 @@ new Vue({
         isLogInModalOpen: false,
         isPasswordVisible: false,
         isPassword2Visible: false,
-        isPasswordLoginVisible: false
+        isPasswordLoginVisible: false,
+        isRecoveryModalOpen: false
     },
     methods: {
         showNotification(message, type) {
@@ -52,7 +99,13 @@ new Vue({
                     this.closeUserModal();
                 } 
                 else if (this.isLogInModalOpen) {
-                    this.closeLogInModal();
+                    if(this.isRecoveryModalOpen)
+                    {
+                        this.closeRecoveryModal();
+                    }
+                    else{
+                        this.closeLogInModal();
+                    }
                 }
             }
             this.isMouseDownOnBackdrop = false;
@@ -69,18 +122,22 @@ new Vue({
             const password = document.getElementById('user-password').value;
             const password_repeat = document.getElementById('user-password-repeat').value;
             let authorNickname = '';
-            let authorVk = '';
+            let AuthorVk = '';
             
+            // Проверяем, если пользователь типа 'merchant', чтобы получить никнейм и VK
             if (this.userType === 'merchant') {
-                authorNickname = document.getElementById('author-nickname').value;
-                authorVk = document.getElementById('author-vk').value;
+                authorNickname = document.getElementById('author-nickname').value || '';
+                AuthorVk = document.getElementById('author-vk').value || '';
             }
-        
+            
+
+            // Проверяем, совпадают ли пароли
             if (password !== password_repeat) {
                 this.showNotification('Пароли не совпадают!', 'error');
                 return;
             }
         
+            // Отправляем данные на сервер
             fetch('/SignUpUser ', {
                 method: 'POST',
                 headers: {
@@ -89,19 +146,21 @@ new Vue({
                 body: JSON.stringify({
                     Login: login,
                     Email: email,
+                    Nickname: authorNickname || '',
+                    VK: AuthorVk || '',
                     Password: password,
-                    Nickname: authorNickname || null,
-                    AuthorVk: authorVk || null,
-                }),
+                }),                
             })
             .then(response => {
                 if (!response.ok) {
                     return response.text().then(text => {
                         if (text.includes('PasswordIsTooWeak')) {
                             return this.showNotification('Пароль слишком слабый.', 'error');
-                        } else if (text.includes('UserAlreadyWithEmail')) {
+                        } else if (text.includes('UserAlreadyExistsWithEmailAndNoToken')) {
                             return this.showNotification('Пользователь с таким email уже существует.', 'error');
-                        } else if (text.includes('UserAlreadyExistsWithLogin')) {
+                        } else if (text.includes('UserAlreadyExistsWithEmailAndHasToken')) {
+                            return this.showNotification('На эту почту уже отправлена ссылка на поддтверждение.', 'error');
+                        } else if (text.includes('User AlreadyExistsWithLogin')) {
                             return this.showNotification('Это имя пользователя уже занято.', 'error');
                         } else if (text.includes('NicknameAlreadyExists')) {
                             return this.showNotification('Этот никнейм уже занят.', 'error');
@@ -125,7 +184,7 @@ new Vue({
                 console.error('Ошибка:', error);
                 this.showNotification('Ошибка регистрации. Попробуйте еще раз.', 'error');
             });
-        },        
+        },
         closeUserModal(){
             this.isUserModalOpen = false;
         },
@@ -161,6 +220,10 @@ new Vue({
                     return response.text().then(text => {
                         if (text.includes('UserNotFound')) {
                             return this.showNotification('Пользователь не найден.', 'error');
+                        } else if (text.includes('UserHasToken')) {
+                            return this.showNotification('Аккаунт на подтверждении.', 'error');
+                        } else if (text.includes('UserHasRecoveryToken')) {
+                            return this.showNotification('Аккаунт на восстановлении.', 'error');
                         } else if (text.includes('UserIsBanned')) {
                             return this.showNotification('Пользователь забанен.', 'error');
                         } else if (text.includes('InvalidCredentials')) {
@@ -185,6 +248,52 @@ new Vue({
         },
         closeLogInModal(){
             this.isLogInModalOpen = false;
+        },
+        openRecoveryModal(){
+            this.isRecoveryModalOpen = true;
+        },
+        submitRecoveryForm(){
+            const email = document.getElementById('RecoveryEmail').value;
+            fetch('/Recovery', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: email,
+                }),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        if (text.includes('UserNotFound')) {
+                            return this.showNotification('Пользователь не найден.', 'error');
+                        } else if (text.includes('UserIsBanned')) {
+                            return this.showNotification('Пользователь забанен.', 'error');
+                        } else if (text.includes('UserHasToken')) {
+                            return this.showNotification('Аккаунт на подтверждении, проверьте почту.', 'error');
+                        } else if (text.includes('UserHasRecoveryToken')) {
+                            return this.showNotification('Аккаунт на восстановлении, проверьте почту.', 'error');
+                        } else if (text.includes('InternalServerError')) {
+                            return this.showNotification('Ошибка сервера!', 'error');
+                        } else if (text.includes('Bad request')) {
+                            return this.showNotification('Плохое соединение!', 'error');
+                        } else {
+                            return this.showNotification('Неизвестная ошибка. Попробуйте снова.', 'error');
+                        }
+                    });
+                } else {
+                    this.showNotification('Письмо с ссылкой на восстановление пароля отправлено!.', 'success');
+                    this.closeRecoveryModal();
+                }
+            })
+            .catch((error) => {
+                console.error('Ошибка:', error);
+                this.showNotification('Ошибка входа. Попробуйте еще раз.', 'error');
+            });
+        },
+        closeRecoveryModal(){
+            this.isRecoveryModalOpen = false;
         },
         togglePasswordVisibility() {
             this.isPasswordVisible = !this.isPasswordVisible;
@@ -213,5 +322,13 @@ new Vue({
                 }
             });
         },
+        isRecoveryModalOpen(newValue) {
+            this.$nextTick(() => {
+                const modal = document.querySelector('.modal-recovery');
+                if (modal) {
+                    modal.style.visibility = newValue ? 'visible' : 'hidden'; 
+                }
+            });
+        }
     }
 });

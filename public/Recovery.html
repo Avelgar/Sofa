@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sofa</title>
+    <link rel="stylesheet" href="Sofa.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+</head>
+<body>
+<div id="app">
+    <div id="notifications" class="notifications"></div>
+    <header>
+        <div class="header-content">
+            <div style="display: flex;">
+                <div class="logo">Sofa</div>
+                <div class="buttons">
+                    <a href="/public/Sofa.html">Назад</a>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div id="notifications" class="notifications"></div>
+    <main>
+        <div>
+            <div>
+                <h2>Смена пароля в CoinTracker</h2>
+                <form id="RecoveryForm" @submit.prevent="submitRecovery">
+
+                    <label for="password">Пароль</label>
+                    <div class="password-container">
+                        <input :type="isPasswordRecoveryVisible ? 'text' : 'password'" id="RecoveryPassword" required>
+                        <a href="#" @click.prevent="togglePasswordRecoveryVisibility" class="eye-link">
+                            <span v-if="isPasswordRecoveryVisible">👁️</span>
+                            <span v-else>👁️‍🗨️</span>
+                        </a>
+                    </div>
+
+                    <label for="password2">Подтвердите пароль</label>
+                    <div class="password-container">
+                        <input :type="isPasswordRecovery2Visible ? 'text' : 'password'" id="RecoveryPassword2" required>
+                        <a href="#" @click.prevent="togglePasswordRecovery2Visibility" class="eye-link">
+                            <span v-if="isPasswordRecovery2Visible">👁️</span>
+                            <span v-else>👁️‍🗨️</span>
+                        </a>
+                    </div>
+
+                    <button type="submit">Сменить пароль</button>
+                </form>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>&copy; 2025 Sofa. Все права защищены.</p>
+    </footer>
+</div>
+<script src="scripts/Recovery.js"></script>
+</body>
+</html>

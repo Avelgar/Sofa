@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sofa</title>
+    <link rel="stylesheet" href="Sofa.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+</head>
+<body>
+<div id="app">
+    <div id="notifications" class="notifications"></div>
+    <header>
+        <div class="header-content">
+            <div style="display: flex;">
+                <div class="logo">Sofa</div>
+                <div class="buttons">
+                    <a style="text-decoration: underline; color:black">Магазин</a>
+                    <a @click.prevent="openExitModal">Выход</a>
+                    <a>Профиль</a>
+                </div>
+            </div>
+            <div>
+                <input type="text" id="searchInput" placeholder="Поиск..." />
+            </div>
+            <a id="menuToggle" class="menu-button">Меню</a>
+        </div>
+    </header>
+
+    <aside id="sidebar" class="sidebar">
+        <nav>
+            <a style="text-decoration: underline; color:black">Магазин</a>
+            <a @click.prevent="openExitModal">Выход</a>
+            <a>Профиль</a>
+        </nav>
+    </aside>
+    <div id="notifications" class="notifications"></div>
+    <main>
+        <section class="background-section">
+            <div class="main-elements">
+                <h1 class="main-big-text">Sofa: Магазин для художников</h1>
+            </div>            
+        </section>
+        <div id="symbols-container" class="symbols-container"></div>
+        <!-- Добавляй код сюда! -->
+
+        <!-- Дальше идут модальные окна! -->
+
+        <div v-if="isExitModalOpen" class="modal" @mousedown="handleMouseDown" @mouseup="handleMouseUp"> 
+            <div class="modal-content" @click.stop>
+                <span class="close" @click="closeExitModal">&times;</span>
+                <h2>Выход</h2>
+                <form id="ExitForm" @submit.prevent="submitExitForm">
+                    <p>Вы действительно хотите выйти?</p>
+                    <button type="submit">Подтвердить</button>
+                </form>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>&copy; 2025 Sofa. Все права защищены.</p>
+    </footer>
+    <script src="scripts/User.js"></script>
+</div>
+</body>
+</html>

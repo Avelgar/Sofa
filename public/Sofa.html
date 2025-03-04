@@ -79,10 +79,10 @@
                         </a>
                     </div>
         
-                    <div style = "display: grid;"v-if="userType === 'merchant'">
+                    <div style = "display: grid;"v-if="userType === 'merchant'">            
                         <label for="author-nickname">Ник автора:</label>
                         <input type="text" id="author-nickname" name="author-nickname" required>
-        
+
                         <label for="author-vk">Ссылка на ВК:</label>
                         <input type="url" id="author-vk" name="author-vk" required>
                     </div>
@@ -110,12 +110,21 @@
                             <span v-else>👁️‍🗨️</span>
                         </a>
                     </div>
-                    <!-- <label style="width:fit-content">
-                        <input type="checkbox" id="rememberMe">
-                        Запомнить меня
-                    </label> -->
                     <button type="submit">Войти</button>
-                    <!-- <a href="#" @click.prevent="openCapchaModal">Забыли пароль?</a> -->
+                    <a href="#" @click.prevent="openRecoveryModal">Забыли пароль?</a>
+                </form>
+            </div>
+        </div>
+
+        <div v-if="isRecoveryModalOpen" class="modal-recovery"@mousedown="handleMouseDown" @mouseup="handleMouseUp"> 
+            <div class="modal-content" @click.stop>
+                <span class="close" @click="closeLogInModal">&times;</span>
+                <h2>Восстановление пароля</h2>
+                <form id="RecoveryForm" @submit.prevent="submitRecoveryForm">
+                    <label for="login">Электронная почта</label>
+                    <input id="RecoveryEmail" required>
+                    <button type="submit">Подтвердить</button>
+                    <a href="#" @click.prevent="openRecoveryModal">Забыли пароль?</a>
                 </form>
             </div>
         </div>
@@ -124,7 +133,7 @@
     <footer>
         <p>&copy; 2025 Sofa. Все права защищены.</p>
     </footer>
+    <script src="scripts/Sofa.js"></script>
 </div>
-<script src="scripts/Sofa.js"></script>
 </body>
 </html>
