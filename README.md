@@ -65,17 +65,24 @@ CREATE TABLE goods (
     id SERIAL PRIMARY KEY,          
     name VARCHAR(255) NOT NULL,     
     price DECIMAL(10, 2) NOT NULL,  
-    photo VARCHAR(255)              
+    photo VARCHAR(255),
+article VARCHAR(255) NOT NULL,
+size VARCHAR(50) NOT NULL,
+material VARCHAR(100) NOT NULL,
+min_order_quantity INT NOT NULL,
+multiplicity INT NOT NULL,
+description TEXT NOT NULL;          
 );
 ```
 8.2 В Command Promt написать следующую команду
 ```
-INSERT INTO goods (name, price, photo) VALUES
-('Футболка "Classic"', 19.99, 'https://cdn1.ozone.ru/s3/multimedia-4/c600/6545345860.jpg'),
-('Джинсы "Slim Fit"', 49.99, 'https://i.pinimg.com/736x/d3/3c/54/d33c541e21d5b3ac97738d4f5e025d7c.jpg'),
-('Кроссовки "Runner"', 59.99, 'https://cdn1.ozone.ru/s3/multimedia-1-w/6979871804.jpg'),
-('Рюкзак "Urban"', 39.99, 'https://avatars.mds.yandex.net/i?id=e9f271c41c545d9f3077644a44db3773_l-10242163-images-thumbs&n=13'),
-('Часы "Elegance"', 99.99, 'https://avatars.mds.yandex.net/i?id=01eb045da1ed7ff4cb50b2b9f7849b26_l-12445014-images-thumbs&n=13');
+INSERT INTO goods (name, price, photo, article, size, material, min_order_quantity, multiplicity, description)
+VALUES
+('Футболка', 19.99, 'https://cdn1.ozone.ru/s3/multimedia-4/c600/6545345860.jpg', 'TSHIRT001', 'M', 'Хлопок 100%', 10, 5, 'Мягкая и дышащая футболка для повседневной носки.'),
+('Джинсы', 49.99, 'https://i.pinimg.com/736x/d3/3c/54/d33c541e21d5b3ac97738d4f5e025d7c.jpg', 'JEANS002', 'L', 'Деним 98%, Эластан 2%', 5, 2, 'Классические синие джинсы с удобным кроем.'),
+('Кроссовки', 89.99, 'https://cdn1.ozone.ru/s3/multimedia-1-w/6979871804.jpg', 'SNEAKERS003', '42', 'Текстиль, резина', 3, 1, 'Легкие и удобные кроссовки для спорта и повседневной носки.'),
+('Рюкзак', 39.99, 'https://avatars.mds.yandex.net/i?id=e9f271c41c545d9f3077644a44db3773_l-10242163-images-thumbs&n=13', 'BACKPACK004', 'Универсальный', 'Полиэстер 100%', 2, 1, 'Стильный и вместительный рюкзак с несколькими отделениями.'),
+('Часы', 129.99, 'https://avatars.mds.yandex.net/i?id=01eb045da1ed7ff4cb50b2b9f7849b26_l-12445014-images-thumbs&n=13', 'WATCH005', 'Стандарт', 'Нержавеющая сталь, кожа', 1, 1, 'Элегантные наручные часы с кожаным ремешком.');
 ```
 
 9. В Command Promt написать следующую команду и закрыть Command Promt
