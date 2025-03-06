@@ -21,7 +21,8 @@ function Authenticate() {
     fetch('/api/authenticate')
         .then(response => {
             if (!response.ok) {
-                window.location.href = '/public/Sofa.html';
+                console.log(response);
+                // window.location.href = '/public/Sofa.html';
             }
             return response.json();
         })
@@ -29,7 +30,21 @@ function Authenticate() {
             if (authData && authData.success) {
                 
             } else {
-                window.location.href = '/public/Sofa.html'; // Перенаправляем при неудачной аутентификации
+                fetch('/api/logout', {
+                    method: 'POST',
+                })
+                .then(response => {
+                    if (response.ok) {
+                        channel.postMessage('logout');
+                        window.location.href = '/public/Sofa.html';
+                    } else {
+                        console.error("Ошибка при выходе:", response.statusText);
+                    }
+                })
+                .catch(error => {
+                    console.error("Ошибка при выходе:", error);
+                });
+                window.location.href = '/public/Sofa.html';
             }
         })
         .catch(error => {
