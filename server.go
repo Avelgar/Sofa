@@ -27,6 +27,13 @@ type User struct {
 	RecoveryTokenDelTime *time.Time `json:"recovery_token_del_time"`
 }
 
+type Good struct {
+    Name  string `json:"name"`
+    Price string    `json:"price"`
+    Photo string `json:"photo"`
+}
+
+
 
 var db *sql.DB
 var store = sessions.NewCookieStore([]byte("abcdefg"))
@@ -489,6 +496,44 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
     json.NewEncoder(w).Encode(map[string]string{"message": "Logout successful"})
 }
 
+func getgoodsHandler(w http.ResponseWriter, r *http.Request) {
+    // Выполняем запрос к таблице goods
+    rows, err := db.Query("SELECT name, price, photo FROM goods")
+    if err != nil {
+        http.Error(w, fmt.Sprintf("Query error: %v", err), http.StatusInternalServerError)
+        return
+    }
+    defer rows.Close()
+
+    var goods []Good
+
+    // Считываем данные из результата запроса
+    for rows.Next() {
+        var good Good
+        if err := rows.Scan(&good.Name, &good.Price, &good.Photo); err != nil {
+            http.Error(w, fmt.Sprintf("Scan error: %v", err), http.StatusInternalServerError)
+            return
+        }
+        goods = append(goods, good)
+    }
+
+    // Проверяем на ошибки после завершения итерации
+    if err := rows.Err(); err != nil {
+        http.Error(w, fmt.Sprintf("Rows error: %v", err), http.StatusInternalServerError)
+        return
+    }
+
+    // Устанавливаем заголовок Content-Type
+    w.Header().Set("Content-Type", "application/json")
+    
+    // Кодируем массив товаров в JSON и отправляем ответ
+    if err := json.NewEncoder(w).Encode(goods); err != nil {
+        http.Error(w, fmt.Sprintf("Encoding error: %v", err), http.StatusInternalServerError)
+        return
+    }
+}
+
+
 func main() {
 	initDB()
 	defer db.Close()
@@ -509,6 +554,7 @@ func main() {
 	http.HandleFunc("/api/checkCookie", handleCheckCookie)
 	http.HandleFunc("/api/authenticate", handleAuthentication)
 	http.HandleFunc("/api/logout", logoutHandler)
+    http.HandleFunc("/api/getgoods", getgoodsHandler)
 
 	// fmt.Println("Сервер запущен на http://localhost:8080")
 	fmt.Println("Сервер запущен на https://46k2wbxg-8080.euw.devtunnels.ms/")

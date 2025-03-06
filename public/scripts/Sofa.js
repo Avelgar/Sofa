@@ -60,10 +60,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-
 new Vue({
     el: '#app',
     data: {
+        goods: [],
         isMouseDownOnModal: false,
         isMouseDownOnBackdrop: false,
         isUserModalOpen: false,
@@ -74,7 +74,45 @@ new Vue({
         isPasswordLoginVisible: false,
         isRecoveryModalOpen: false
     },
+    mounted() {
+        this.fetchGoods();
+    },
     methods: {
+        fetchGoods() {
+            fetch('/api/getgoods')
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(`Ошибка: ${response.status} ${response.statusText} - ${text}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                this.goods = data; // Сохраняем данные в массив
+                this.displayGoods(); // Отображаем товары
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+        
+        },
+        displayGoods() {
+            const container = document.getElementById('symbols-container');
+            container.innerHTML = ''; // Очищаем контейнер перед добавлением новых карточек
+
+            this.goods.forEach(good => {
+                const card = document.createElement('div');
+                card.className = 'card'; // Добавьте класс для стилизации карточек
+                card.innerHTML = `
+                    <img src="${good.photo}" alt="${good.name}" class="card-image" />
+                    <h2 class="card-title">${good.name}</h2>
+                    <p class="card-price">${good.price} ₽</p>
+                    <button @click.prevent="openUserModal">купить</button>
+                `;
+                container.appendChild(card); // Добавляем карточку в контейнер
+            });
+        },
         showNotification(message, type) {
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
