@@ -66,12 +66,12 @@ CREATE TABLE goods (
     name VARCHAR(255) NOT NULL,     
     price DECIMAL(10, 2) NOT NULL,  
     photo VARCHAR(255),
-article VARCHAR(255) NOT NULL,
-size VARCHAR(50) NOT NULL,
-material VARCHAR(100) NOT NULL,
-min_order_quantity INT NOT NULL,
-multiplicity INT NOT NULL,
-description TEXT NOT NULL;          
+   article VARCHAR(255) NOT NULL,
+   size VARCHAR(50) NOT NULL,
+   material VARCHAR(100) NOT NULL,
+   min_order_quantity INT NOT NULL,
+   multiplicity INT NOT NULL,
+   description TEXT NOT NULL;          
 );
 ```
 8.2 В Command Promt написать следующую команду
