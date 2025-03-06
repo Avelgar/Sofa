@@ -28,10 +28,17 @@ type User struct {
 }
 
 type Good struct {
-    Name  string `json:"name"`
-    Price string    `json:"price"`
-    Photo string `json:"photo"`
+    Name                 string  `json:"name"`
+    Price                float64 `json:"price"` // Изменено на float64 для корректного представления цены
+    Photo                string  `json:"photo"`
+    Article              string  `json:"article"`              // Добавлено поле article
+    Size                 string  `json:"size"`                 // Добавлено поле size
+    Material             string  `json:"material"`             // Добавлено поле material
+    MinOrderQuantity     int     `json:"min_order_quantity"`   // Добавлено поле min_order_quantity
+    Multiplicity         int     `json:"multiplicity"`         // Добавлено поле multiplicity
+    Description          string  `json:"description"`          // Добавлено поле description
 }
+
 
 
 
