@@ -293,6 +293,7 @@ form {
 .eye-link {
     position: absolute;
     right: 10px; /* Расположение ссылки внутри поля */
+    top: 3px;
     text-decoration: none; /* Убираем подчеркивание */
     font-size: 18px; /* Размер иконки */
     cursor: pointer; /* Курсор при наведении */
@@ -327,6 +328,25 @@ form {
 .card-price {
     font-size: 1.1em;
     color: #333;
+}
+
+.card button {
+    margin: 10px auto 0 auto;
+    padding: 12px 20px;
+    background-color: #9c131d;
+    color: #fff;
+    border: 2px solid #ffffff;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+    font-size: 16px;
+}
+
+.card button:hover {
+    background-color: #fff;
+    color: #9c131d;
+    border: 2px solid #9c131d;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 
