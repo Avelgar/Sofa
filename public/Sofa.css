@@ -55,22 +55,6 @@ header {
     display: flex;
 }
 
-.nav-button {
-    text-decoration: none;
-    position: relative;
-}
-
-.nav-button.active::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -5px;
-    height: 2px;
-    background-color: black;
-    transition: all 0.3s ease;
-}
-
 .sidebar {
     position: fixed;
     top: 0;
