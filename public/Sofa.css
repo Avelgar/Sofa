@@ -55,6 +55,29 @@ header {
     display: flex;
 }
 
+.nav-button {
+    text-decoration: none;
+    position: relative;
+}
+
+.nav-button.active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -5px;
+    height: 2px;
+    background-color: black;
+    transition: all 0.3s ease;
+}
+
+#searchInput {
+    height: 25px;
+    border-color: #9c131d;
+    outline: none;
+    border-radius: 8px;
+}
+
 .sidebar {
     position: fixed;
     top: 0;
@@ -231,9 +254,15 @@ form {
 }
 
 .modal-content input:focus {
-    border-color: #007bff;
+    border-color: #9c131d;
     outline: none;
-    box-shadow: 0 0 0 2px #0056b3;
+    box-shadow: 0 0 0 2px #9c131d;
+}
+.modal-content input:hover {
+    border-color: #9c131d;
+    outline: none;
+    box-shadow: 0 0 0 2px #9c131d;
+    transition: 0.3s;
 }
 .modal-content .button-container{
     display: flex;
@@ -241,18 +270,19 @@ form {
 .modal-content button {
     margin: 10px auto 0 auto;
     padding: 12px 20px;
-    background-color: #007bff;
+    background-color: #9c131d;
     color: #fff;
-    border: none;
+    border: 2px solid #ffffff;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+    font-size: 16px;
 }
 
 .modal-content button:hover {
     background-color: #fff;
-    color: #0056b3;
-    border: 2px solid #0056b3;
+    color: #9c131d;
+    border: 2px solid #9c131d;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
@@ -263,6 +293,7 @@ form {
 .eye-link {
     position: absolute;
     right: 10px; /* Расположение ссылки внутри поля */
+    top: 3px;
     text-decoration: none; /* Убираем подчеркивание */
     font-size: 18px; /* Размер иконки */
     cursor: pointer; /* Курсор при наведении */
@@ -272,6 +303,7 @@ form {
     display: flex;
     flex-wrap: wrap;
     gap: 20px; /* Пробел между карточками */
+    margin: 20px;
 }
 
 .card {
@@ -285,7 +317,7 @@ form {
 .card-image {
     max-width: 100%;
     height: auto;
-    border-radius: 4px;
+    border-radius: 5px;
 }
 
 .card-title {
@@ -296,6 +328,25 @@ form {
 .card-price {
     font-size: 1.1em;
     color: #333;
+}
+
+.card button {
+    margin: 10px auto 0 auto;
+    padding: 12px 20px;
+    background-color: #9c131d;
+    color: #fff;
+    border: 2px solid #ffffff;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+    font-size: 16px;
+}
+
+.card button:hover {
+    background-color: #fff;
+    color: #9c131d;
+    border: 2px solid #9c131d;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 
