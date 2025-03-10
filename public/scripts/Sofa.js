@@ -105,10 +105,12 @@ new Vue({
                 const card = document.createElement('div');
                 card.className = 'card'; // Добавьте класс для стилизации карточек
                 card.innerHTML = `
-                    <img src="${good.photo}" alt="${good.name}" class="card-image" />
-                    <h2 class="card-title">${good.name}</h2>
-                    <p class="card-price">${good.price} ₽</p>
-                    <button @click.prevent="openUserModal">Купить</button>
+                    <div class="card-body"> 
+                        <img src="${good.photo}" alt="${good.name}" class="card-image" />
+                        <h2 class="card-title">${good.name}</h2>
+                        <p class="card-price">${good.price} ₽</p>
+                    </div>
+                    <button @click.prevent="openUserModal">В корзину</button>
                 `;
                 container.appendChild(card); // Добавляем карточку в контейнер
             });

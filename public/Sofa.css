@@ -314,6 +314,12 @@ form {
     text-align: center;
 }
 
+.card:hover {
+    cursor: pointer;
+    background-color: #eee;
+    border-color: #9c131d;
+}
+
 .card-image {
     max-width: 100%;
     height: auto;
@@ -330,12 +336,19 @@ form {
     color: #333;
 }
 
+.card-body {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 2;
+    height: 85%;
+}
+
 .card button {
     margin: 10px auto 0 auto;
     padding: 12px 20px;
     background-color: #9c131d;
     color: #fff;
-    border: 2px solid #ffffff;
+    border: 2px solid #9c131d;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
