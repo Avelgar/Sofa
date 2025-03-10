@@ -13,17 +13,18 @@
     <!-- Заголовок, логотип, навигационные ссылки -->
     <header> 
         <div class="header-content">
-            <div style="display: flex;">
-                <img src="rose.jpeg" alt="Логотип" class="logo-image" style="width: 80px; height: auto; margin-right: 20px;">
-                <div class="logo">Sofa</div>
-                <div class="buttons">
-                    <a style="text-decoration: underline; color:black">Магазин</a>
-                    <a @click.prevent="openLogInModal">Войти</a>
+            <div style="display: flex; align-items: center;">
+                <img src="rose.jpeg" alt="Логотип" class="logo-image" 
+                style="width: 80px; height: auto; margin-right: 20px;">
+                <div class="logo" style="margin-right: 20px;">Sofa</div>
+                <div class="buttons" style="display: flex; align-items: center; margin-right: auto;">
+                    <a style="text-decoration: underline; color:black; margin-right: 15px;">Магазин</a>
+                    <a @click.prevent="openLogInModal" style="margin-right: 15px;">Войти</a>
                     <a @click.prevent="openUserModal" >Зарегистрироваться</a>
                 </div>
             </div>
             <div>
-                <input type="text" id="searchInput" placeholder="Поиск..." />
+                <input type="text" id="searchInput" placeholder="Поиск..." style="margin-right: 20px;"/>
             </div>
             <a id="menuToggle" class="menu-button">Меню</a>
         </div>
