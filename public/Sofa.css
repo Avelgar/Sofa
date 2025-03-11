@@ -24,6 +24,10 @@ h1, h2, p {
     margin: 0;
 }
 
+h2 {
+    line-height: 46.5px;
+}
+
 header {
     position: sticky;
     top: 0;
@@ -49,6 +53,11 @@ header {
 .logo {
     font-size: 1.7em;
     font-weight: bold;
+}
+
+.logo-group {
+    display: flex;
+    align-items: center;
 }
 
 .buttons{
@@ -145,6 +154,11 @@ main {
 .main-big-text {
     font-size: 3em;
     color: black;
+}
+
+.main-big-img {
+    height: 40vh;
+    float: right;
 }
 
 button {
@@ -408,8 +422,14 @@ form {
 
 @media screen and (max-width: 748px) {
     header{
-        padding: 0px 40px;
+        padding: 0px 5px;
     }
+
+    .logo-group {
+        flex-grow: 1;
+        justify-content: center;
+    }
+
     .sidebar.active {
         display: block;
         transform: translateX(0);
@@ -430,9 +450,27 @@ form {
     nav{
         display: grid;
     }
+
+    .main-elements {
+        height: 20vh;
+    }
     
     .main-big-text {
-        padding-top:30px ;
-        font-size: 3em;
+        padding-top:10px ;
+        font-size: 28px;
+    }
+
+    .main-big-img {
+        height: 20vh;
+        float: right;
+    }
+
+    .horiz-button-menu button {
+        margin-left: 5px;
+        margin-right: 5px;
+        background-color: #fff;
+        color: black;
+        border: 2px solid #fff;
+        
     }
 }
