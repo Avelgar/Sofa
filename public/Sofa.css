@@ -138,14 +138,13 @@ main {
     justify-content: space-around;
     display: flex;
     flex-direction: row;
-    color: black;
+    align-items: center;
+    text-align: center;
 }
 
 .main-big-text {
     font-size: 3em;
-    height: 40vh;
-    vertical-align: middle;
-    text-align: center;
+    color: black;
 }
 
 button {
