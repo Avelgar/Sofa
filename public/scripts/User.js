@@ -48,7 +48,7 @@ function Authenticate() {
             }
         })
         .catch(error => {
-            //window.location.href = '/public/Sofa.html';
+            window.location.href = '/public/Sofa.html';
             console.error("Ошибка при загрузке монет:", error);
         });
 }
@@ -57,7 +57,7 @@ const channel = new BroadcastChannel('auth_channel');
 
 channel.onmessage = (event) => {
     if (event.data === 'logout') {
-        window.location.href = '/public/CoinTracker.html';
+        window.location.href = '/public/Sofa.html';
     }
 };
 
