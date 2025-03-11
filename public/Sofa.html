@@ -18,7 +18,7 @@
                 style="width: 80px; height: auto; margin-right: 20px;">
                 <div class="logo" style="margin-right: 20px;">Sofa</div>
                 <div class="buttons" style="display: flex; align-items: center; margin-right: auto;">
-                    <a style="color:black; margin-right: 15px; border-bottom: 2px solid #9c131d;">Магазин</a>
+                    <a style="color:black; margin-right: 15px; border-bottom: 2px solid #9c131d;">Главная</a>
                     <a @click.prevent="openLogInModal" style="margin-right: 15px;">Войти</a>
                     <a @click.prevent="openUserModal" >Зарегистрироваться</a>
                 </div>
@@ -43,12 +43,44 @@
     
     <!-- Основная часть -->
     <main>
-        <section class="background-section">
-            <div class="main-elements">
+        <div class="main-elements">
+            <div style="height: 40vh;">
                 <h1 class="main-big-text">Sofa: Магазин для художников</h1>
-            </div>            
-        </section>
-        <div id="symbols-container" class="symbols-container"><!-- Добавляй сюда карточки --></div>
+            </div>
+            
+            <img src="Catto.png" style="height: 40vh; float: right;">
+        </div>
+
+        <div style="margin: 20px;">
+            <div style="display: flex; justify-content: space-between;">
+                <h2>О нас:</h2>
+                
+            </div>
+            
+            <p>TEXTEXTEXTEXTEXTEXTEXTEXTEXTEXTEXTEXTEXT<br></p>
+            <br>
+            <br><br>
+
+            <div class="horiz-button-menu">
+                <button>Доставка</button>
+                <div class="spacer-button">
+                    <button>Оплата</button>
+                </div>
+                <button>Контакты</button>
+            </div>
+        </div>
+
+        <br>
+        
+        <div style="display: flex; justify-content: space-between; margin: 20px;">
+            <h2 style="vertical-align: middle;">Популярное</h2>
+            <button>Каталог ></button>
+        </div>
+        
+        <div id="symbols-container" class="symbols-container">
+            
+            <!-- Добавляй сюда карточки -->
+        </div>
         <!-- Добавляй код сюда! -->
 
         <!-- Дальше идут модальные окна! -->
@@ -58,8 +90,8 @@
                 <h2>Зарегистрироваться в Sofa</h2>
                 <p>С помощью электронной почты</p>
                 <div class="button-container">
-                    <button type="button" @click="selectUserType('buyer')">Покупатель</button>
-                    <button type="button" @click="selectUserType('merchant')">Мерчедел</button>
+                    <button class="selected" type="button" id="buyerButton" @click="selectUserType('buyer')">Покупатель</button>
+                    <button class="" type="button" id="merchantButton" @click="selectUserType('merchant')">Мерчедел</button>
                 </div>
                 <form id="UserForm" @submit.prevent="submitUserForm">
                     <label for="login">Логин</label>

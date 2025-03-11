@@ -133,29 +133,63 @@ main {
     min-height:50em;
 }
 
-.background-section {
-    background-image: url('https://losko.ru/wp-content/uploads/2019/11/7702b9faef4382f33090b0b87b2c0ad0-1.jpg');
-    border-radius:50px;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    height: 40vh;
-    display: flex;
-    justify-content: center;
-    text-align: center;
-}
-
 .main-elements {
+    height: 40vh;
+    justify-content: space-around;
     display: flex;
-    flex-direction: column;
-    height: 100%;
-    color: white;
+    flex-direction: row;
+    color: black;
 }
 
 .main-big-text {
-    padding-top:30px ;
-    font-size: 5em;
-    margin-bottom: auto;
+    font-size: 3em;
+    height: 40vh;
+    vertical-align: middle;
+    text-align: center;
+}
+
+button {
+    padding: 12px 20px;
+    background-color: #9c131d;
+    color: #fff;
+    border: 2px solid #ffffff;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #fff;
+    color: #9c131d;
+    border: 2px solid #9c131d;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.horiz-button-menu {
+    display: flex;
+    justify-content: center;
+}
+
+.horiz-button-menu button {
+    margin-left: 40px;
+    margin-right: 40px;
+    background-color: #fff;
+    color: black;
+    border: 2px solid #fff;
+    
+}
+
+.horiz-button-menu button:hover {
+    background-color: #fff;
+    color: #9c131d;
+    border: 2px solid #9c131d;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.spacer-button {
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
 }
 
 footer {
@@ -258,28 +292,38 @@ form {
     outline: none;
     box-shadow: 0 0 0 2px #9c131d;
 }
+
 .modal-content input:hover {
     border-color: #9c131d;
     outline: none;
     box-shadow: 0 0 0 2px #9c131d;
     transition: 0.3s;
 }
+
 .modal-content .button-container{
     display: flex;
 }
+
 .modal-content button {
     margin: 10px auto 0 auto;
     padding: 12px 20px;
     background-color: #9c131d;
     color: #fff;
     border: 2px solid #ffffff;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
     font-size: 16px;
 }
 
 .modal-content button:hover {
+    background-color: #fff;
+    color: #9c131d;
+    border: 2px solid #9c131d;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content .selected {
     background-color: #fff;
     color: #9c131d;
     border: 2px solid #9c131d;
@@ -349,7 +393,7 @@ form {
     background-color: #9c131d;
     color: #fff;
     border: 2px solid #9c131d;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
     font-size: 16px;
@@ -381,7 +425,7 @@ form {
     }
 
     .buttons {
-        display: none;
+        display: none !important; 
     }
 
     nav{

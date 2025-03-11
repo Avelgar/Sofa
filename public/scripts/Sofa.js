@@ -155,6 +155,16 @@ new Vue({
         },
         selectUserType(type) {
             this.userType = type; // Устанавливаем тип пользователя
+            const merchantButton = document.getElementById("merchantButton");
+            const buyerButton = document.getElementById("buyerButton");
+            if (type === 'buyer') {
+                buyerButton.classList.add("selected");
+                merchantButton.classList.remove("selected");
+            };
+            if (type === 'merchant') {
+                merchantButton.classList.add("selected");
+                buyerButton.classList.remove("selected");
+            };
         },
         submitUserForm() {
             const login = document.getElementById('user-login').value;

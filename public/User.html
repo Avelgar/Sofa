@@ -12,16 +12,21 @@
     <div id="notifications" class="notifications"></div>
     <header>
         <div class="header-content">
-            <div style="display: flex;">
-                <div class="logo">Sofa</div>
-                <div class="buttons">
-                    <a style="text-decoration: underline; color:black">Магазин</a>
-                    <a @click.prevent="openExitModal">Выход</a>
+            <div style="display: flex; align-items: center;">
+                <img src="rose.jpeg" alt="Логотип" class="logo-image" 
+                style="width: 80px; height: auto; margin-right: 20px;">
+                <div class="logo" style="margin-right: 20px;">Sofa</div>
+                <div class="buttons" style="display: flex; align-items: center; margin-right: auto;">
+                    <a style="color:black; margin-right: 15px; border-bottom: 2px solid #9c131d;">Главная</a>
                     <a>Профиль</a>
+                    <a>Избранное</a>
+                    <a>Заказы</a>
+                    <a @click.prevent="openExitModal" style="margin-right: 15px;">Выход</a>
                 </div>
             </div>
-            <div>
-                <input type="text" id="searchInput" placeholder="Поиск..." />
+            <div style="position: relative; display: inline-block;">
+                <img src="залупа.png" alt="Поиск" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px;">
+                <input type="text" id="searchInput" placeholder="Поиск..." style="padding-left: 30px;"/>
             </div>
             <a id="menuToggle" class="menu-button">Меню</a>
         </div>
@@ -29,9 +34,11 @@
 
     <aside id="sidebar" class="sidebar">
         <nav>
-            <a style="text-decoration: underline; color:black">Магазин</a>
-            <a @click.prevent="openExitModal">Выход</a>
+            <a style="text-decoration: underline bold; color:black">Магазин</a>
             <a>Профиль</a>
+            <a>Избранное</a>
+            <a>Заказы</a>
+            <a @click.prevent="openExitModal">Выход</a>
         </nav>
     </aside>
     <div id="notifications" class="notifications"></div>
