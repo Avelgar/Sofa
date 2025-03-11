@@ -48,7 +48,7 @@ function Authenticate() {
             }
         })
         .catch(error => {
-            window.location.href = '/public/Sofa.html';
+            //window.location.href = '/public/Sofa.html';
             console.error("Ошибка при загрузке монет:", error);
         });
 }
