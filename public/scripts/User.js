@@ -36,7 +36,7 @@ function Authenticate() {
                 .then(response => {
                     if (response.ok) {
                         channel.postMessage('logout');
-                        window.location.href = '/public/Sofa.html';
+                        //window.location.href = '/public/Sofa.html';
                     } else {
                         console.error("Ошибка при выходе:", response.statusText);
                     }
@@ -44,7 +44,7 @@ function Authenticate() {
                 .catch(error => {
                     console.error("Ошибка при выходе:", error);
                 });
-                window.location.href = '/public/Sofa.html';
+                //window.location.href = '/public/Sofa.html';
             }
         })
         .catch(error => {
