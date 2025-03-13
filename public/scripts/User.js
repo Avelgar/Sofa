@@ -21,8 +21,7 @@ function Authenticate() {
     fetch('/api/authenticate')
         .then(response => {
             if (!response.ok) {
-                console.log(response);
-                // window.location.href = '/public/Sofa.html';
+                window.location.href = '/public/Sofa.html';
             }
             return response.json();
         })
@@ -36,7 +35,7 @@ function Authenticate() {
                 .then(response => {
                     if (response.ok) {
                         channel.postMessage('logout');
-                        //window.location.href = '/public/Sofa.html';
+                        window.location.href = '/public/Sofa.html';
                     } else {
                         console.error("Ошибка при выходе:", response.statusText);
                     }
@@ -44,7 +43,7 @@ function Authenticate() {
                 .catch(error => {
                     console.error("Ошибка при выходе:", error);
                 });
-                //window.location.href = '/public/Sofa.html';
+                window.location.href = '/public/Sofa.html';
             }
         })
         .catch(error => {
@@ -68,7 +67,47 @@ new Vue({
         isMouseDownOnBackdrop: false,
         isExitModalOpen: false,
     },
+    mounted() {
+        this.fetchGoods();
+    },
     methods: {
+        fetchGoods() {
+            fetch('/api/getgoods')
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(`Ошибка: ${response.status} ${response.statusText} - ${text}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                this.goods = data; // Сохраняем данные в массив
+                this.displayGoods(); // Отображаем товары
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+        
+        },
+        displayGoods() {
+            const container = document.getElementById('symbols-container');
+            container.innerHTML = ''; // Очищаем контейнер перед добавлением новых карточек
+
+            this.goods.forEach(good => {
+                const card = document.createElement('div');
+                card.className = 'card'; // Добавьте класс для стилизации карточек
+                card.innerHTML = `
+                    <div class="card-body"> 
+                        <img src="${good.photo}" alt="${good.name}" class="card-image" />
+                        <h2 class="card-title">${good.name}</h2>
+                        <p class="card-price">${good.price} ₽</p>
+                    </div>
+                    <button @click.prevent="openUserModal">В корзину</button>
+                `;
+                container.appendChild(card); // Добавляем карточку в контейнер
+            });
+        },
         handleMouseDown(event) {
             if (event.target === event.currentTarget) {
                 this.isMouseDownOnBackdrop = true;
