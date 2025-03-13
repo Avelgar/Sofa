@@ -540,6 +540,34 @@ func getgoodsHandler(w http.ResponseWriter, r *http.Request) {
     }
 }
 
+func handleCheckUserFields(w http.ResponseWriter, r *http.Request) {
+    login := r.URL.Query().Get("login")
+    if login == "" {
+        http.Error(w, "Login is required", http.StatusBadRequest)
+        return
+    }
+
+    var user User
+    err := db.QueryRow("SELECT nickname, vk FROM users WHERE login = $1", login).Scan(&user.Nickname, &user.VK)
+    if err != nil {
+        if err == sql.ErrNoRows {
+            http.Error(w, "User  not found", http.StatusNotFound)
+            return
+        }
+        http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+        return
+    }
+
+    response := map[string]interface{}{
+        "nickname": user.Nickname,
+        "vk":       user.VK,
+    }
+
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(response)
+}
+
+
 
 func main() {
 	initDB()
@@ -562,6 +590,7 @@ func main() {
 	http.HandleFunc("/api/authenticate", handleAuthentication)
 	http.HandleFunc("/api/logout", logoutHandler)
     http.HandleFunc("/api/getgoods", getgoodsHandler)
+    http.HandleFunc("/api/checkUserFields", handleCheckUserFields)
 
 	// fmt.Println("Сервер запущен на http://localhost:8080")
 	fmt.Println("Сервер запущен на https://46k2wbxg-8080.euw.devtunnels.ms/")
