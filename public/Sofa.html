@@ -76,7 +76,17 @@
             <button>Каталог ></button>
         </div>
         
-        <div id="symbols-container" class="symbols-container"></div>
+        <div id="symbols-container" class="symbols-container">
+            <div v-for="good in goods" :key="good.id" class="card">
+                <div class="card-body"> 
+                    <img :src="good.photo" :alt="good.name" class="card-image" />
+                    <h2 class="card-title">{{ good.name }}</h2>
+                    <p class="card-price">{{ good.price }} ₽</p>
+                </div>
+                <button @click.prevent="openUserModal">В корзину</button>
+            </div>
+        </div>
+        
         <!-- Добавляй код сюда! -->
 
         <!-- Дальше идут модальные окна! -->

@@ -90,31 +90,11 @@ new Vue({
             })
             .then(data => {
                 this.goods = data; // Сохраняем данные в массив
-                this.displayGoods(); // Отображаем товары
             })
             .catch(error => {
                 console.error('There was a problem with the fetch operation:', error);
             });
-        
-        },
-        displayGoods() {
-            const container = document.getElementById('symbols-container');
-            container.innerHTML = ''; // Очищаем контейнер перед добавлением новых карточек
-
-            this.goods.forEach(good => {
-                const card = document.createElement('div');
-                card.className = 'card'; // Добавьте класс для стилизации карточек
-                card.innerHTML = `
-                    <div class="card-body"> 
-                        <img src="${good.photo}" alt="${good.name}" class="card-image" />
-                        <h2 class="card-title">${good.name}</h2>
-                        <p class="card-price">${good.price} ₽</p>
-                    </div>
-                    <button @click.prevent="openUserModal">В корзину</button>
-                `;
-                container.appendChild(card); // Добавляем карточку в контейнер
-            });
-        },
+        },          
         showNotification(message, type) {
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
@@ -127,7 +107,7 @@ new Vue({
                 notification.style.display = 'none';
                 notification.remove();
             }, 3000);
-        },
+        },  
         handleMouseDown(event) {
             if (event.target === event.currentTarget) {
                 this.isMouseDownOnBackdrop = true;

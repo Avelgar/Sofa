@@ -504,8 +504,8 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getgoodsHandler(w http.ResponseWriter, r *http.Request) {
-    // Выполняем запрос к таблице goods
-    rows, err := db.Query("SELECT name, price, photo FROM goods")
+    // Выполняем запрос к таблице goods, выбирая все необходимые поля
+    rows, err := db.Query("SELECT name, price, photo, article, size, material, min_order_quantity, multiplicity, description FROM goods")
     if err != nil {
         http.Error(w, fmt.Sprintf("Query error: %v", err), http.StatusInternalServerError)
         return
@@ -517,7 +517,7 @@ func getgoodsHandler(w http.ResponseWriter, r *http.Request) {
     // Считываем данные из результата запроса
     for rows.Next() {
         var good Good
-        if err := rows.Scan(&good.Name, &good.Price, &good.Photo); err != nil {
+        if err := rows.Scan(&good.Name, &good.Price, &good.Photo, &good.Article, &good.Size, &good.Material, &good.MinOrderQuantity, &good.Multiplicity, &good.Description); err != nil {
             http.Error(w, fmt.Sprintf("Scan error: %v", err), http.StatusInternalServerError)
             return
         }
@@ -539,6 +539,7 @@ func getgoodsHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 }
+
 
 func handleCheckUserFields(w http.ResponseWriter, r *http.Request) {
     login := r.URL.Query().Get("login")

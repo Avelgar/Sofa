@@ -63,14 +63,34 @@ channel.onmessage = (event) => {
 new Vue({
     el: '#app',
     data: {
+        goods: [],
         isMouseDownOnModal: false,
         isMouseDownOnBackdrop: false,
         isExitModalOpen: false,
+        isProductModalOpen: false,
+        selectedProduct: {},
+        quantity: 1
     },
     mounted() {
         this.fetchGoods();
     },
     methods: {
+        handleMouseDown(event) {
+            if (event.target === event.currentTarget) {
+                this.isMouseDownOnBackdrop = true;
+            }
+        },
+        handleMouseUp(event) {
+            if (this.isMouseDownOnBackdrop && event.target === event.currentTarget) {
+                if (this.isExitModalOpen) {
+                    this.closeExitModal();
+                }
+                else if (this.isProductModalOpen) {
+                    this.closeProductModal();
+                }
+            }
+            this.isMouseDownOnBackdrop = false;
+        },
         fetchGoods() {
             fetch('/api/getgoods')
             .then(response => {
@@ -82,42 +102,25 @@ new Vue({
                 return response.json();
             })
             .then(data => {
+                console.log(data);
                 this.goods = data; // Сохраняем данные в массив
-                this.displayGoods(); // Отображаем товары
             })
             .catch(error => {
                 console.error('There was a problem with the fetch operation:', error);
             });
-        
         },
-        displayGoods() {
-            const container = document.getElementById('symbols-container');
-            container.innerHTML = ''; // Очищаем контейнер перед добавлением новых карточек
-
-            this.goods.forEach(good => {
-                const card = document.createElement('div');
-                card.className = 'card'; // Добавьте класс для стилизации карточек
-                card.innerHTML = `
-                    <div class="card-body"> 
-                        <img src="${good.photo}" alt="${good.name}" class="card-image" />
-                        <h2 class="card-title">${good.name}</h2>
-                        <p class="card-price">${good.price} ₽</p>
-                    </div>
-                    <button @click.prevent="openUserModal">В корзину</button>
-                `;
-                container.appendChild(card); // Добавляем карточку в контейнер
-            });
+        openProductModal(good) {
+            this.selectedProduct = good; // Сохраняем выбранный товар
+            this.quantity = good.min_order_quantity; // Устанавливаем минимальное количество
+            this.isProductModalOpen = true; // Открываем модальное окно
         },
-        handleMouseDown(event) {
-            if (event.target === event.currentTarget) {
-                this.isMouseDownOnBackdrop = true;
-            }
+        closeProductModal() {
+            this.isProductModalOpen = false; // Закрываем модальное окно
         },
-        handleMouseUp(event) {
-            if (this.isMouseDownOnBackdrop && event.target === event.currentTarget) {
-                    this.closeExitModal();
-            }
-            this.isMouseDownOnBackdrop = false;
+        addToCart() {
+            // Логика для добавления товара в корзину
+            console.log(`Добавлено ${this.quantity} шт. товара: ${this.selectedProduct.name}`);
+            this.closeProductModal(); // Закрываем модальное окно
         },
         openExitModal() {
             this.isExitModalOpen = true;
@@ -144,6 +147,14 @@ new Vue({
     },
     watch: {
         isExitModalOpen(newValue) {
+            this.$nextTick(() => {
+                const modal = document.querySelector('.modal');
+                if (modal) {
+                    modal.style.visibility = newValue ? 'visible' : 'hidden'; 
+                }
+            });
+        },
+        isProductModalOpen(newValue) {
             this.$nextTick(() => {
                 const modal = document.querySelector('.modal');
                 if (modal) {

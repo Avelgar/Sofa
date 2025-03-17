@@ -49,7 +49,16 @@
             <h1 class="main-big-text">Sofa: Магазин для художников</h1>
             <img src="assets/Catto.png" class="main-big-img">
         </div>
-        <div id="symbols-container" class="symbols-container"></div>
+        <div id="symbols-container" class="symbols-container">
+            <div v-for="good in goods" :key="good.id" class="card">
+                <div class="card-body"> 
+                    <img :src="good.photo" :alt="good.name" class="card-image" />
+                    <h2 class="card-title">{{ good.name }}</h2>
+                    <p class="card-price">{{ good.price }} ₽</p>
+                </div>
+                <button @click.prevent="openProductModal(good)">В корзину</button>
+            </div>
+        </div>
         <!-- Добавляй код сюда! -->
 
         <!-- Дальше идут модальные окна! -->
@@ -64,6 +73,25 @@
                 </form>
             </div>
         </div>
+
+        <div v-if="isProductModalOpen" class="modal" @mousedown="handleMouseDown" @mouseup="handleMouseUp"> 
+            <div class="modal-content" @click.stop>
+                <span class="close" @click="closeProductModal">&times;</span>
+                <h2>{{ selectedProduct.name }}</h2>
+                <p>Материал: {{ selectedProduct.material }}</p>
+                <p>Размер: {{ selectedProduct.size }}</p>
+                <p>Минимальное количество для заказа: {{ selectedProduct.min_order_quantity }}</p>
+                <p>Описание: {{ selectedProduct.description }}</p>
+                
+                <label for="quantity">Количество:</label>
+                <input type="number" id="quantity" v-model="quantity" :min="selectedProduct.min_order_quantity" />
+
+                <p>Цена: {{ (selectedProduct.price * quantity).toFixed(2) }} ₽</p>
+
+                <button @click="addToCart">Добавить в корзину</button>
+            </div>
+        </div>
+
     </main>
     
     <footer>
