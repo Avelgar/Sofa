@@ -69,16 +69,58 @@ CREATE TABLE goods (
     price DECIMAL(10, 2) NOT NULL,  
     photo VARCHAR(255),
     article VARCHAR(255) NOT NULL,
-    size VARCHAR(50) NOT NULL,
-    material VARCHAR(100) NOT NULL,
     min_order_quantity INT NOT NULL,
     multiplicity INT NOT NULL,
-    description TEXT NOT NULL          
+    description TEXT NOT NULL,
+    original_link TEXT,
+    tipography TEXT,
+    need_maket BOOLEAN DEFAULT FALSE,
+    maket_format TEXT,
+    color_profile TEXT
 );
 ```
 8.2 В Command Promt написать следующую команду
 ```
-INSERT INTO goods (name, price, photo, article, size, material, min_order_quantity, multiplicity, description) VALUES ('Футболка', 19.99, 'https://sun9-4.userapi.com/impg/u3VEwypfjzjd9WAeEI8Z4ogg9gsCoOcLAddTVQ/FbEhP9AXOjw.jpg?size=2560x2560&quality=95&sign=0e628df426a44ed6d3c08ccbc3d189fe&type=album', 'TSHIRT001', 'M', 'Хлопок 100%', 10, 5, 'Мягкая и дышащая футболка для повседневной носки.'), ('Джинсы', 49.99, 'https://sun9-11.userapi.com/impg/hCF3Uqij0AXAjnOf1PVxHx2gqWhQD_aA69uBgg/zMA9R7Ny_tg.jpg?size=2560x2560&quality=95&sign=795961b1b8c35f14f7b47f372462feeb&type=album', 'JEANS002', 'L', 'Деним 98%, Эластан 2%', 5, 2, 'Классические синие джинсы с удобным кроем.'), ('Кроссовки', 89.99, 'https://sun9-57.userapi.com/impg/U0eoWlY7GRqc-MfaE_yN24hmGG-4BqzZspIYaw/q_Zado_0-wo.jpg?size=2560x2560&quality=95&sign=e2e490539c61983a9f010dd59ca3a2ee&type=album', 'SNEAKERS003', '42', 'Текстиль, резина', 3, 1, 'Легкие и удобные кроссовки для спорта и повседневной носки.'), ('Рюкзак', 39.99, 'https://sun9-58.userapi.com/impg/d8X55p95r_LssTVS5ZHauleLUrbVgEMGnd2zng/bvmNA4D5tGI.jpg?size=2560x2560&quality=95&sign=fb6dbf685d7423542f57c9301f34ed6f&type=album', 'BACKPACK004', 'Универсальный', 'Полиэстер 100%', 2, 1, 'Стильный и вместительный рюкзак с несколькими отделениями.'), ('Часы', 129.99, 'https://sun9-7.userapi.com/impg/3JjqlZB5xhvkar32RbYIuF0eQN1tDhdO6S5gEQ/m1ZXcpa9xLQ.jpg?size=2560x2560&quality=95&sign=f6ebc4a486e1e85705a62c963c5d048d&type=album', 'WATCH005', 'Стандарт', 'Нержавеющая сталь, кожа', 1, 1, 'Элегантные наручные часы с кожаным ремешком.');
+INSERT INTO goods (
+    name, price, photo, article, min_order_quantity, multiplicity, 
+    description, original_link, tipography, need_maket, maket_format, color_profile
+) 
+VALUES 
+(
+    'Футболка', 19.99, 
+    'https://sun9-4.userapi.com/impg/u3VEwypfjzjd9WAeEI8Z4ogg9gsCoOcLAddTVQ/FbEhP9AXOjw.jpg?size=2560x2560&quality=95&sign=0e628df426a44ed6d3c08ccbc3d189fe&type=album', 
+    'TSHIRT001', 10, 5, 
+    'Мягкая и дышащая футболка для повседневной носки.', 
+    'https://example.com/design1', 'Arial, 12pt, Bold', TRUE, 'png', 'CMYK'
+),
+(
+    'Джинсы', 49.99, 
+    'https://sun9-11.userapi.com/impg/hCF3Uqij0AXAjnOf1PVxHx2gqWhQD_aA69uBgg/zMA9R7Ny_tg.jpg?size=2560x2560&quality=95&sign=795961b1b8c35f14f7b47f372462feeb&type=album', 
+    'JEANS002', 4, 2, 
+    'Классические синие джинсы с удобным кроем.', 
+    'https://example.com/design2', 'Times New Roman, 14pt', FALSE, NULL, NULL
+),
+(
+    'Кроссовки', 89.99, 
+    'https://sun9-57.userapi.com/impg/U0eoWlY7GRqc-MfaE_yN24hmGG-4BqzZspIYaw/q_Zado_0-wo.jpg?size=2560x2560&quality=95&sign=e2e490539c61983a9f010dd59ca3a2ee&type=album', 
+    'SNEAKERS003', 3, 1, 
+    'Легкие и удобные кроссовки для спорта и повседневной носки.', 
+    'https://example.com/design3', 'Helvetica, 10pt, Regular', TRUE, 'png', 'RGB'
+),
+(
+    'Рюкзак', 39.99, 
+    'https://sun9-58.userapi.com/impg/d8X55p95r_LssTVS5ZHauleLUrbVgEMGnd2zng/bvmNA4D5tGI.jpg?size=2560x2560&quality=95&sign=fb6dbf685d7423542f57c9301f34ed6f&type=album', 
+    'BACKPACK004', 2, 1, 
+    'Стильный и вместительный рюкзак с несколькими отделениями.', 
+    'https://example.com/design4', 'Verdana, 11pt, Italic', FALSE, NULL, NULL
+),
+(
+    'Часы', 129.99, 
+    'https://sun9-7.userapi.com/impg/3JjqlZB5xhvkar32RbYIuF0eQN1tDhdO6S5gEQ/m1ZXcpa9xLQ.jpg?size=2560x2560&quality=95&sign=f6ebc4a486e1e85705a62c963c5d048d&type=album', 
+    'WATCH005', 1, 1, 
+    'Элегантные наручные часы с кожаным ремешком.', 
+    'https://example.com/design5', 'Georgia, 13pt, Bold', TRUE, 'jpg', 'Pantone 123C'
+);
 ```
 
 9. В Command Promt написать следующую команду и закрыть Command Promt
