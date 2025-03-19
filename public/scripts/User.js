@@ -48,7 +48,7 @@ function Authenticate() {
         })
         .catch(error => {
             window.location.href = '/public/Sofa.html';
-            console.error("Ошибка при загрузке монет:", error);
+            console.error("Ошибка при авторизации:", error);
         });
 }
 
@@ -102,7 +102,6 @@ new Vue({
                 return response.json();
             })
             .then(data => {
-                console.log(data);
                 this.goods = data; // Сохраняем данные в массив
             })
             .catch(error => {

@@ -15,28 +15,33 @@ import (
 )
 
 type User struct {
-    Login    string  `json:"login"`
-    Email    string  `json:"email"`
-    Password string  `json:"password"`
-	Nickname string  `json:"nickname"`
-	VK string `json:"vk"`
-    IsBanned bool    `json:"is_banned"`
-    SignUpToken        *string    `json:"sign_up_token"`
-	SignUpTokenDelTime *time.Time `json:"sign_up_token_del_time"`
-    RecoveryToken      *string    `json:"recovery_token"`
-	RecoveryTokenDelTime *time.Time `json:"recovery_token_del_time"`
+    Login                string    `json:"login"`
+    Email                string    `json:"email"`
+    Password             string    `json:"password"`
+    Nickname             string    `json:"nickname"`
+    VK                   string    `json:"vk"`
+    IsBanned             bool      `json:"is_banned"`
+    SignUpToken          *string   `json:"sign_up_token"`
+    SignUpTokenDelTime   *time.Time `json:"sign_up_token_del_time"`
+    RecoveryToken        *string   `json:"recovery_token"`
+    RecoveryTokenDelTime *time.Time `json:"recovery_token_del_time"`
+    Goods                string    `json:"goods"`
+    GoodsWithMakets      string    `json:"goods_with_makets"`
 }
 
 type Good struct {
-    Name                 string  `json:"name"`
-    Price                float64 `json:"price"` // Изменено на float64 для корректного представления цены
-    Photo                string  `json:"photo"`
-    Article              string  `json:"article"`              // Добавлено поле article
-    Size                 string  `json:"size"`                 // Добавлено поле size
-    Material             string  `json:"material"`             // Добавлено поле material
-    MinOrderQuantity     int     `json:"min_order_quantity"`   // Добавлено поле min_order_quantity
-    Multiplicity         int     `json:"multiplicity"`         // Добавлено поле multiplicity
-    Description          string  `json:"description"`          // Добавлено поле description
+    Name                 string  `json:"name"`                 // Поле name
+    Price                float64 `json:"price"`                // Поле price
+    Photo                string  `json:"photo"`                // Поле photo
+    Article              string  `json:"article"`              // Поле article
+    MinOrderQuantity     int     `json:"min_order_quantity"`   // Поле min_order_quantity
+    Multiplicity         int     `json:"multiplicity"`         // Поле multiplicity
+    Description          string  `json:"description"`          // Поле description
+    OriginalLink         string  `json:"original_link"`        // Поле original_link
+    Tipography            string  `json:"tipography"`           // Поле tipography
+    NeedMaket            bool    `json:"need_maket"`          // Поле need_maket
+    MaketFormat          string  `json:"maket_format"`        // Поле maket_format
+    ColorProfile         string  `json:"color_profile"`       // Поле color_profile
 }
 
 
@@ -121,10 +126,10 @@ func SignUpUserHandler(w http.ResponseWriter, r *http.Request) {
     err = db.QueryRow("SELECT email, login, sign_up_token FROM users WHERE email = $1", user.Email).Scan(&existingUser .Email, &existingUser .Login, &existingUser .SignUpToken)
     if err == nil {
         if existingUser .SignUpToken == nil {
-			http.Error(w, "UserAlreadyExistsWithEmailAndNoToken", http.StatusConflict)
-		} else {
-			http.Error(w, "UserAlreadyExistsWithEmailAndHasToken", http.StatusConflict)
-		}
+            http.Error(w, "UserAlreadyExistsWithEmailAndNoToken", http.StatusConflict)
+        } else {
+            http.Error(w, "UserAlreadyExistsWithEmailAndHasToken", http.StatusConflict)
+        }
         return
     } else if err != sql.ErrNoRows {
         log.Println("Error checking existing user by email:", err)
@@ -135,7 +140,7 @@ func SignUpUserHandler(w http.ResponseWriter, r *http.Request) {
     // Проверка на существование пользователя по login
     err = db.QueryRow("SELECT login, email FROM users WHERE login = $1", user.Login).Scan(&existingUser .Login, &existingUser .Email)
     if err == nil {
-        http.Error(w, "UserAlreadyExistsWithLogin", http.StatusConflict)
+        http.Error(w, "AlreadyExistsWithLogin", http.StatusConflict)
         return
     } else if err != sql.ErrNoRows {
         log.Println("Error checking existing user by login:", err)
@@ -157,23 +162,26 @@ func SignUpUserHandler(w http.ResponseWriter, r *http.Request) {
     }
 
     signUpToken := generateSignUpToken()
-	user.SignUpToken = &signUpToken
-	t := time.Now().Add(time.Hour)
-	user.SignUpTokenDelTime = &t
+    user.SignUpToken = &signUpToken
+    t := time.Now().Add(time.Hour)
+    user.SignUpTokenDelTime = &t
 
-	subject := "Подтверждение Регистрации"
-	body := fmt.Sprintf("Пожалуйста, подтвердите вашу регистрацию, перейдя по следующей ссылке: https://46k2wbxg-8080.euw.devtunnels.ms/public/Sofa.html?token=%s", *user.SignUpToken)
-	err = sendMessageEmail(user.Email, subject, body)
-	if err != nil {
-		log.Println("Ошибка при отправке письма:", err)
-	}
+    subject := "Подтверждение Регистрации"
+    body := fmt.Sprintf("Пожалуйста, подтвердите вашу регистрацию, перейдя по следующей ссылке: https://46k2wbxg-8080.euw.devtunnels.ms/public/Sofa.html?token=%s", *user.SignUpToken)
+    err = sendMessageEmail(user.Email, subject, body)
+    if err != nil {
+        log.Println("Ошибка при отправке письма:", err)
+    }
 
     user.RecoveryToken = nil
-	user.RecoveryTokenDelTime = nil
+    user.RecoveryTokenDelTime = nil
     user.IsBanned = false
+    user.Goods = ""          
+    user.GoodsWithMakets = ""
 
-    _, err = db.Exec("INSERT INTO users (login, email, password, is_banned, nickname, vk, sign_up_token, sign_up_token_del_time, recovery_token, recovery_token_del_time) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
-        user.Login, user.Email, user.Password, user.IsBanned, user.Nickname, user.VK, user.SignUpToken, user.SignUpTokenDelTime, user.RecoveryToken, user.RecoveryTokenDelTime)
+    _, err = db.Exec("INSERT INTO users (login, email, password, is_banned, nickname, vk, sign_up_token, sign_up_token_del_time, recovery_token, recovery_token_del_time, goods, goods_with_makets) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)",
+        user.Login, user.Email, user.Password, user.IsBanned, user.Nickname, user.VK, user.SignUpToken, user.SignUpTokenDelTime, user.RecoveryToken, user.RecoveryTokenDelTime, user.Goods, user.GoodsWithMakets)
+    
     if err != nil {
         log.Println("Error inserting user into database:", err)
         http.Error(w, "UserAlreadySignUp", http.StatusInternalServerError)
@@ -181,8 +189,9 @@ func SignUpUserHandler(w http.ResponseWriter, r *http.Request) {
     }
 
     w.WriteHeader(http.StatusCreated)
-    json.NewEncoder(w).Encode(map[string]string{"message": "User  registered successfully"})
+    json.NewEncoder(w).Encode(map[string]string{"message": "User registered successfully"})
 }
+
 
 func cleanUpExpiredTokens() {
 	for {
@@ -433,10 +442,10 @@ func logInHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "InvalidCredentials", http.StatusUnauthorized)
 		return
 	}
-
+    var sessionEmail = storedUser .Email
 	session, _ := store.Get(r, "session-name")
 	session.Values["authenticated"] = true
-	session.Values["userLogin"] = user.Login
+	session.Values["userEmail"] = sessionEmail
 	session.Save(r, w)
 
     w.WriteHeader(http.StatusOK)
@@ -465,26 +474,26 @@ func handleCheckCookie(w http.ResponseWriter, r *http.Request) {
 func handleAuthentication(w http.ResponseWriter, r *http.Request) {
     session, err := store.Get(r, "session-name")
     if err == nil && session.Values["authenticated"] != nil {
-        login := session.Values["userLogin"].(string)
-        var email string
-        err = db.QueryRow("SELECT email FROM users WHERE login = $1", login).Scan( &email)
+        if email, ok := session.Values["userEmail"].(string); ok {
+            var login string
+            err = db.QueryRow("SELECT login FROM users WHERE email = $1", email).Scan(&login)
+            if err == nil {
+                response := map[string]interface{}{
+                    "success": true,
+                    "login":   login,
+                    "email":   email,
+                }
 
-        if err == nil {
-            
-            response := map[string]interface{}{
-                "success": true,
-                "login":   login,
-                "email": email,
+                json.NewEncoder(w).Encode(response)
+                return
             }
-
-            json.NewEncoder(w).Encode(response)
-            return
         }
     }
 
     // Если аутентификация не удалась
     json.NewEncoder(w).Encode(map[string]interface{}{"success": false})
 }
+
 
 func logoutHandler(w http.ResponseWriter, r *http.Request) {
     // Завершаем сессию
@@ -503,9 +512,9 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
     json.NewEncoder(w).Encode(map[string]string{"message": "Logout successful"})
 }
 
-func getgoodsHandler(w http.ResponseWriter, r *http.Request) {
-    // Выполняем запрос к таблице goods, выбирая все необходимые поля
-    rows, err := db.Query("SELECT name, price, photo, article, size, material, min_order_quantity, multiplicity, description FROM goods")
+func SofagetgoodsHandler(w http.ResponseWriter, r *http.Request) {
+    // Выполняем запрос к таблице goods, выбирая все товары
+    rows, err := db.Query("SELECT name, price, photo FROM goods")
     if err != nil {
         http.Error(w, fmt.Sprintf("Query error: %v", err), http.StatusInternalServerError)
         return
@@ -517,10 +526,50 @@ func getgoodsHandler(w http.ResponseWriter, r *http.Request) {
     // Считываем данные из результата запроса
     for rows.Next() {
         var good Good
-        if err := rows.Scan(&good.Name, &good.Price, &good.Photo, &good.Article, &good.Size, &good.Material, &good.MinOrderQuantity, &good.Multiplicity, &good.Description); err != nil {
+        if err := rows.Scan(&good.Name, &good.Price, &good.Photo); err != nil {
             http.Error(w, fmt.Sprintf("Scan error: %v", err), http.StatusInternalServerError)
             return
         }
+        goods = append(goods, good)
+    }
+
+    // Проверяем на ошибки после завершения итерации
+    if err := rows.Err(); err != nil {
+        http.Error(w, fmt.Sprintf("Rows error: %v", err), http.StatusInternalServerError)
+        return
+    }
+
+    // Устанавливаем заголовок Content-Type
+    w.Header().Set("Content-Type", "application/json")
+    
+    // Кодируем массив товаров в JSON и отправляем ответ
+    if err := json.NewEncoder(w).Encode(goods); err != nil {
+        http.Error(w, fmt.Sprintf("Encoding error: %v", err), http.StatusInternalServerError)
+        return
+    }
+}
+
+func getgoodsHandler(w http.ResponseWriter, r *http.Request) {
+    // Выполняем запрос к таблице goods, выбирая только товары с need_maket = false
+    rows, err := db.Query("SELECT name, price, photo, article, min_order_quantity, multiplicity, description, original_link, tipography FROM goods WHERE need_maket = false")
+    if err != nil {
+        http.Error(w, fmt.Sprintf("Query error: %v", err), http.StatusInternalServerError)
+        return
+    }
+    defer rows.Close()
+
+    var goods []Good
+
+    // Считываем данные из результата запроса
+    for rows.Next() {
+        var good Good
+        if err := rows.Scan(&good.Name, &good.Price, &good.Photo, &good.Article, &good.MinOrderQuantity, &good.Multiplicity, &good.Description, &good.OriginalLink, &good.Tipography); err != nil {
+            http.Error(w, fmt.Sprintf("Scan error: %v", err), http.StatusInternalServerError)
+            return
+        }
+        good.NeedMaket = false // Устанавливаем значение need_maket в false
+        good.MaketFormat = ""  // Поле maket_format пустое
+        good.ColorProfile = "" // Поле color_profile пустое
         goods = append(goods, good)
     }
 
@@ -569,6 +618,60 @@ func handleCheckUserFields(w http.ResponseWriter, r *http.Request) {
 }
 
 
+func changeLoginHandler(w http.ResponseWriter, r *http.Request) {
+    var requestData struct {
+        Login string `json:"login"`
+    }
+
+    // Декодируем JSON из тела запроса
+    err := json.NewDecoder(r.Body).Decode(&requestData)
+    if err != nil || requestData.Login == "" {
+        http.Error(w, "Badrequest", http.StatusBadRequest)
+        return
+    }
+
+    session, err := store.Get(r, "session-name")
+    if err != nil || session.Values["authenticated"] == nil {
+        http.Error(w, "Unauthorized", http.StatusUnauthorized)
+        return
+    }
+
+    // Получаем email из сессии
+    email, ok := session.Values["userEmail"].(string)
+    if !ok {
+        http.Error(w, "Unauthorized", http.StatusUnauthorized)
+        return
+    }
+
+    // Проверяем, существует ли уже логин в базе данных
+    var existingLogin string
+    err = db.QueryRow("SELECT login FROM users WHERE login = $1", requestData.Login).Scan(&existingLogin)
+    if err != nil && err != sql.ErrNoRows {
+        http.Error(w, "Login already exists", http.StatusInternalServerError)
+        return
+    }
+
+    // Если логин уже существует, возвращаем ошибку
+    if existingLogin != "" {
+        http.Error(w, "Login already exists", http.StatusConflict)
+        return
+    }
+
+    // Обновляем логин в базе данных
+    _, err = db.Exec("UPDATE users SET login = $1 WHERE email = $2", requestData.Login, email)
+    if err != nil {
+        http.Error(w, "InternalServerError", http.StatusInternalServerError)
+        return
+    }
+
+    // Возвращаем успешный ответ
+    w.WriteHeader(http.StatusOK)
+    json.NewEncoder(w).Encode(map[string]string{"newLogin": requestData.Login})
+}
+
+
+
+
 
 func main() {
 	initDB()
@@ -590,8 +693,10 @@ func main() {
 	http.HandleFunc("/api/checkCookie", handleCheckCookie)
 	http.HandleFunc("/api/authenticate", handleAuthentication)
 	http.HandleFunc("/api/logout", logoutHandler)
+    http.HandleFunc("/sofa/getgoods", SofagetgoodsHandler)
     http.HandleFunc("/api/getgoods", getgoodsHandler)
     http.HandleFunc("/api/checkUserFields", handleCheckUserFields)
+    http.HandleFunc("/api/changeLogin", changeLoginHandler)
 
 	// fmt.Println("Сервер запущен на http://localhost:8080")
 	fmt.Println("Сервер запущен на https://46k2wbxg-8080.euw.devtunnels.ms/")

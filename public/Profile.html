@@ -32,21 +32,25 @@
     </nav>
 </aside>
 
+<div id="notifications" class="notifications"></div>
+
 <main>
-    <div style = "display:flex; justify-content:center">
-        <div class="modal-content">
-            <h2>Профиль</h2>
-            <form id="ProfileForm" @submit.prevent="submitProfile">
-                <label for="username">Логин:</label>
-                <input type="text" id="username" v-model="username" required>
-                <label for="email">Почта:</label>
-                <input type="email" id="email" v-model="email" required readonly>
-                <label id = "vk_label"for="vk" style="display: none;">ВК:</label>
-                <input type="text" id="vk" v-model="vk" style="display: none;" readonly>
-                <label id = "nickname_label"for="nickname" style="display: none;">Никнейм:</label>
-                <input type="text" id="nickname" v-model="nickname" style="display: none;" readonly>
-                <button type="submit">Смена логина</button>
-            </form>
+    <div id="app">
+        <div style = "display:flex; justify-content:center">
+            <div class="modal-content">
+                <h2>Профиль</h2>
+                <form id="ProfileForm" @submit.prevent="submitProfile">
+                    <label for="username">Логин:</label>
+                    <input type="text" id="username" v-model="username" required>
+                    <label for="email">Почта:</label>
+                    <input type="email" id="email" v-model="email" required readonly>
+                    <label id = "vk_label"for="vk" style="display: none;">ВК:</label>
+                    <input type="text" id="vk" v-model="vk" style="display: none;" readonly>
+                    <label id = "nickname_label"for="nickname" style="display: none;">Никнейм:</label>
+                    <input type="text" id="nickname" v-model="nickname" style="display: none;" readonly>
+                    <button type="submit">Смена логина</button>
+                </form>
+            </div>
         </div>
     </div>
 </main>

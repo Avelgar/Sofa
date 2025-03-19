@@ -100,6 +100,15 @@
                     <button class="" type="button" id="merchantButton" @click="selectUserType('merchant')">Мерчедел</button>
                 </div>
                 <form id="UserForm" @submit.prevent="submitUserForm">
+
+                            
+                    <div style = "display: grid;"v-if="userType === 'merchant'">            
+                        <label for="author-nickname">Ник автора:</label>
+                        <input type="text" id="author-nickname" name="author-nickname" required>
+
+                        <label for="author-vk">Ссылка на ВК:</label>
+                        <input type="url" id="author-vk" name="author-vk" required>
+                    </div>
                     <label for="login">Логин</label>
                     <input type="login" id="user-login" required>
         
@@ -122,14 +131,6 @@
                             <span v-if="isPassword2Visible">👁️</span>
                             <span v-else>👁️‍🗨️</span>
                         </a>
-                    </div>
-        
-                    <div style = "display: grid;"v-if="userType === 'merchant'">            
-                        <label for="author-nickname">Ник автора:</label>
-                        <input type="text" id="author-nickname" name="author-nickname" required>
-
-                        <label for="author-vk">Ссылка на ВК:</label>
-                        <input type="url" id="author-vk" name="author-vk" required>
                     </div>
         
                     <button type="submit">Зарегистрироваться</button>
@@ -163,13 +164,12 @@
 
         <div v-if="isRecoveryModalOpen" class="modal-recovery"@mousedown="handleMouseDown" @mouseup="handleMouseUp"> 
             <div class="modal-content" @click.stop>
-                <span class="close" @click="closeLogInModal">&times;</span>
+                <span class="close" @click="closeRecoveryModal">&times;</span>
                 <h2>Восстановление пароля</h2>
                 <form id="RecoveryForm" @submit.prevent="submitRecoveryForm">
                     <label for="login">Электронная почта</label>
                     <input id="RecoveryEmail" required>
                     <button type="submit">Подтвердить</button>
-                    <a href="#" @click.prevent="openRecoveryModal">Забыли пароль?</a>
                 </form>
             </div>
         </div>

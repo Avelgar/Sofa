@@ -79,7 +79,7 @@ new Vue({
     },
     methods: {
         fetchGoods() {
-            fetch('/api/getgoods')
+            fetch('/sofa/getgoods')
             .then(response => {
                 if (!response.ok) {
                     return response.text().then(text => {
