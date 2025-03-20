@@ -492,3 +492,67 @@ form {
         
     }
 }
+
+.chatbot-toggle-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 5; /* Убедитесь, что кнопка всегда поверх других элементов */
+    padding: 10px 15px;
+    background-color: #9c131d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.chatbot {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 999; /* Убедитесь, что чат выше других элементов */
+}
+
+.chatbot-header {
+    background-color: #9c131d;
+    color: white;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chatbot-messages {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.user-message {
+    text-align: right;
+    color: blue;
+}
+
+.bot-message {
+    text-align: left;
+    color: green;
+}
+
+.chatbot-input {
+    display: flex;
+    padding: 10px;
+}
+
+.chatbot-input input {
+    flex: 1;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+

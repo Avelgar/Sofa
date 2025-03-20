@@ -9,6 +9,8 @@ import (
     "net/smtp"
 	"strings"
     "time"
+    "bytes"
+    "io/ioutil"
 
 	"github.com/gorilla/sessions"
 	_ "github.com/lib/pq"
@@ -44,7 +46,14 @@ type Good struct {
     ColorProfile         string  `json:"color_profile"`       // Поле color_profile
 }
 
+type RequestBody struct {
+    Input string `json:"input"`
+}
 
+type GeminiResponse struct {
+    Response string `json:"response"`
+    Error    string `json:"error,omitempty"`
+}
 
 
 var db *sql.DB
@@ -669,9 +678,53 @@ func changeLoginHandler(w http.ResponseWriter, r *http.Request) {
     json.NewEncoder(w).Encode(map[string]string{"newLogin": requestData.Login})
 }
 
+func geminiHandler(w http.ResponseWriter, r *http.Request) {
+    if r.Method != http.MethodPost {
+        http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+        return
+    }
 
+    var reqBody RequestBody
+    err := json.NewDecoder(r.Body).Decode(&reqBody)
+    if err != nil {
+        http.Error(w, "Invalid request body", http.StatusBadRequest)
+        return
+    }
 
+    // Создаем запрос к серверу Gemini
+    geminiURL := "http://blue.fnode.me:25534/generate"
+    jsonData, err := json.Marshal(map[string]string{"prompt": reqBody.Input})
+    if err != nil {
+        http.Error(w, "Error marshalling request", http.StatusInternalServerError)
+        return
+    }
 
+    resp, err := http.Post(geminiURL, "application/json", bytes.NewBuffer(jsonData))
+    if err != nil {
+        http.Error(w, "Error contacting Gemini server", http.StatusInternalServerError)
+        return
+    }
+    defer resp.Body.Close()
+
+    body, err := ioutil.ReadAll(resp.Body)
+    if err != nil {
+        http.Error(w, "Error reading response", http.StatusInternalServerError)
+        return
+    }
+
+    // Проверяем статус ответа от Gemini
+    if resp.StatusCode != http.StatusOK {
+        var geminiResp GeminiResponse
+        json.Unmarshal(body, &geminiResp)
+        http.Error(w, fmt.Sprintf("Gemini error: %s", geminiResp.Error), resp.StatusCode)
+        return
+    }
+
+    // Возвращаем ответ клиенту
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusOK)
+    w.Write(body)
+}
 
 func main() {
 	initDB()
@@ -697,6 +750,7 @@ func main() {
     http.HandleFunc("/api/getgoods", getgoodsHandler)
     http.HandleFunc("/api/checkUserFields", handleCheckUserFields)
     http.HandleFunc("/api/changeLogin", changeLoginHandler)
+    http.HandleFunc("/api/gemini", geminiHandler)
 
 	// fmt.Println("Сервер запущен на http://localhost:8080")
 	fmt.Println("Сервер запущен на https://46k2wbxg-8080.euw.devtunnels.ms/")
