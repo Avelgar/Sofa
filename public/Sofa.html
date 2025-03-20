@@ -26,7 +26,7 @@
                 </div>
             </div>
             <div style="position: relative; display: inline-block;">
-                <img src="assets/лупа.png" alt="Поиск" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px;">
+                <img src="assets/SearchIcon.png" alt="Поиск" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px;">
                 <input type="text" id="searchInput" placeholder="Поиск..." style="padding-left: 30px;"/>
             </div>
             <a id="menuToggle" class="menu-button">Меню</a>
@@ -79,7 +79,10 @@
         <div id="symbols-container" class="symbols-container">
             <div v-for="good in goods" :key="good.id" class="card">
                 <div class="card-body"> 
-                    <img :src="good.photo" :alt="good.name" class="card-image" />
+                    <div class="card-image-block">
+                        <img :src="good.photo" :alt="good.name" class="card-image" />
+                        <a @click.prevent="openUserModal" class="card-fav"><img src="assets/FavIcon.png"></a>
+                    </div>
                     <h2 class="card-title">{{ good.name }}</h2>
                     <p class="card-price">{{ good.price }} ₽</p>
                 </div>
