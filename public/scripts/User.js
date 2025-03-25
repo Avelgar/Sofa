@@ -28,22 +28,6 @@ function Authenticate() {
         .then(authData => {
             if (authData && authData.success) {
                 
-            } else {
-                fetch('/api/logout', {
-                    method: 'POST',
-                })
-                .then(response => {
-                    if (response.ok) {
-                        channel.postMessage('logout');
-                        window.location.href = '/public/Sofa.html';
-                    } else {
-                        console.error("Ошибка при выходе:", response.statusText);
-                    }
-                })
-                .catch(error => {
-                    console.error("Ошибка при выходе:", error);
-                });
-                window.location.href = '/public/Sofa.html';
             }
         })
         .catch(error => {
@@ -102,6 +86,7 @@ new Vue({
                 return response.json();
             })
             .then(data => {
+                console.log(data);
                 this.goods = data; // Сохраняем данные в массив
             })
             .catch(error => {

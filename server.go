@@ -42,8 +42,8 @@ type Good struct {
     OriginalLink         string  `json:"original_link"`        // Поле original_link
     Tipography            string  `json:"tipography"`           // Поле tipography
     NeedMaket            bool    `json:"need_maket"`          // Поле need_maket
-    MaketFormat          string  `json:"maket_format"`        // Поле maket_format
-    ColorProfile         string  `json:"color_profile"`       // Поле color_profile
+    MaketFormat          *string  `json:"maket_format"`        // Поле maket_format
+    ColorProfile         *string  `json:"color_profile"`       // Поле color_profile
 }
 
 type RequestBody struct {
@@ -559,8 +559,33 @@ func SofagetgoodsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getgoodsHandler(w http.ResponseWriter, r *http.Request) {
-    // Выполняем запрос к таблице goods, выбирая только товары с need_maket = false
-    rows, err := db.Query("SELECT name, price, photo, article, min_order_quantity, multiplicity, description, original_link, tipography FROM goods WHERE need_maket = false")
+    session, err := store.Get(r, "session-name")
+    if err != nil || session.Values["userEmail"] == nil {
+        http.Error(w, "Unauthorized", http.StatusUnauthorized)
+        return
+    }
+
+    email := session.Values["userEmail"].(string)
+    var user User
+
+    err = db.QueryRow("SELECT nickname, vk FROM users WHERE email = $1", email).Scan(&user.Nickname, &user.VK)
+    if err != nil {
+        http.Error(w, "User  not found", http.StatusNotFound)
+        return
+    }
+
+    var rows *sql.Rows
+    var query string
+
+    if user.Nickname == "" && user.VK == "" {
+        // Запрос для пользователей без никнейма и VK
+        query = "SELECT name, price, photo FROM goods WHERE need_maket = false"
+    } else {
+        // Запрос для пользователей с никнеймом или VK, включая maket_format и color_profile
+        query = "SELECT name, price, photo, article, min_order_quantity, multiplicity, description, original_link, tipography, maket_format, color_profile FROM goods"
+    }
+
+    rows, err = db.Query(query)
     if err != nil {
         http.Error(w, fmt.Sprintf("Query error: %v", err), http.StatusInternalServerError)
         return
@@ -569,34 +594,53 @@ func getgoodsHandler(w http.ResponseWriter, r *http.Request) {
 
     var goods []Good
 
-    // Считываем данные из результата запроса
     for rows.Next() {
         var good Good
-        if err := rows.Scan(&good.Name, &good.Price, &good.Photo, &good.Article, &good.MinOrderQuantity, &good.Multiplicity, &good.Description, &good.OriginalLink, &good.Tipography); err != nil {
-            http.Error(w, fmt.Sprintf("Scan error: %v", err), http.StatusInternalServerError)
-            return
+        if user.Nickname == "" && user.VK == "" {
+            // Считываем только необходимые поля для ограниченного запроса
+            if err := rows.Scan(&good.Name, &good.Price, &good.Photo); err != nil {
+                http.Error(w, fmt.Sprintf("Scan error: %v", err), http.StatusInternalServerError)
+                return
+            }
+        } else {
+            // Считываем все поля для полного запроса
+            var maketFormat sql.NullString
+            var colorProfile sql.NullString
+            
+            if err := rows.Scan(&good.Name, &good.Price, &good.Photo, &good.Article, &good.MinOrderQuantity, &good.Multiplicity, &good.Description, &good.OriginalLink, &good.Tipography, &maketFormat, &colorProfile); err != nil {
+                http.Error(w, fmt.Sprintf("Scan error: %v", err), http.StatusInternalServerError)
+                return
+            }
+            
+            // Присваиваем значения, учитывая возможные NULL
+            if maketFormat.Valid {
+                good.MaketFormat = &maketFormat.String
+            } else {
+                good.MaketFormat = nil
+            }
+            
+            if colorProfile.Valid {
+                good.ColorProfile = &colorProfile.String
+            } else {
+                good.ColorProfile = nil
+            }
         }
-        good.NeedMaket = false // Устанавливаем значение need_maket в false
-        good.MaketFormat = ""  // Поле maket_format пустое
-        good.ColorProfile = "" // Поле color_profile пустое
         goods = append(goods, good)
     }
 
-    // Проверяем на ошибки после завершения итерации
     if err := rows.Err(); err != nil {
         http.Error(w, fmt.Sprintf("Rows error: %v", err), http.StatusInternalServerError)
         return
     }
 
-    // Устанавливаем заголовок Content-Type
     w.Header().Set("Content-Type", "application/json")
     
-    // Кодируем массив товаров в JSON и отправляем ответ
     if err := json.NewEncoder(w).Encode(goods); err != nil {
         http.Error(w, fmt.Sprintf("Encoding error: %v", err), http.StatusInternalServerError)
         return
     }
 }
+
 
 
 func handleCheckUserFields(w http.ResponseWriter, r *http.Request) {
@@ -726,6 +770,32 @@ func geminiHandler(w http.ResponseWriter, r *http.Request) {
     w.Write(body)
 }
 
+func userPageHandler(w http.ResponseWriter, r *http.Request) {
+    // Проверяем аутентификацию
+    session, err := store.Get(r, "session-name")
+    if err != nil || session.Values["authenticated"] == nil || session.Values["authenticated"] == false {
+        // Если пользователь не аутентифицирован, перенаправляем его на главную страницу
+        http.Redirect(w, r, "/public/Sofa.html", http.StatusFound)
+        return
+    }
+
+    // Если аутентифицирован, отображаем страницу пользователя
+    http.ServeFile(w, r, "./public/User.html")
+}
+
+func profilePageHandler(w http.ResponseWriter, r *http.Request) {
+    // Проверяем аутентификацию
+    session, err := store.Get(r, "session-name")
+    if err != nil || session.Values["authenticated"] == nil || session.Values["authenticated"] == false {
+        // Если пользователь не аутентифицирован, перенаправляем его на главную страницу
+        http.Redirect(w, r, "/public/Sofa.html", http.StatusFound)
+        return
+    }
+
+    http.ServeFile(w, r, "./public/Profile.html")
+}
+
+
 func main() {
 	initDB()
 	defer db.Close()
@@ -736,7 +806,8 @@ func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/public/Sofa.html", http.StatusFound)
 	})
-
+    http.HandleFunc("/public/User.html", userPageHandler)
+    http.HandleFunc("/public/Profile.html", profilePageHandler)
 	http.HandleFunc("/SignUpUser", SignUpUserHandler)
     http.HandleFunc("/api/checkToken", handleCheckToken)
     http.HandleFunc("/Recovery", recoveryHandler)
