@@ -582,7 +582,7 @@ func getgoodsHandler(w http.ResponseWriter, r *http.Request) {
         query = "SELECT name, price, photo FROM goods WHERE need_maket = false"
     } else {
         // Запрос для пользователей с никнеймом или VK, включая maket_format и color_profile
-        query = "SELECT name, price, photo, article, min_order_quantity, multiplicity, description, original_link, tipography, maket_format, color_profile FROM goods"
+        query = "SELECT name, price, photo, article, min_order_quantity, multiplicity, description, original_link, tipography, need_maket, maket_format, color_profile FROM goods"
     }
 
     rows, err = db.Query(query)
@@ -607,7 +607,7 @@ func getgoodsHandler(w http.ResponseWriter, r *http.Request) {
             var maketFormat sql.NullString
             var colorProfile sql.NullString
             
-            if err := rows.Scan(&good.Name, &good.Price, &good.Photo, &good.Article, &good.MinOrderQuantity, &good.Multiplicity, &good.Description, &good.OriginalLink, &good.Tipography, &maketFormat, &colorProfile); err != nil {
+            if err := rows.Scan(&good.Name, &good.Price, &good.Photo, &good.Article, &good.MinOrderQuantity, &good.Multiplicity, &good.Description, &good.OriginalLink, &good.Tipography, &good.NeedMaket, &maketFormat, &colorProfile); err != nil {
                 http.Error(w, fmt.Sprintf("Scan error: %v", err), http.StatusInternalServerError)
                 return
             }
@@ -795,6 +795,75 @@ func profilePageHandler(w http.ResponseWriter, r *http.Request) {
     http.ServeFile(w, r, "./public/Profile.html")
 }
 
+func addToCartHandler(w http.ResponseWriter, r *http.Request) {
+    var requestBody struct {
+        Goods            string `json:"goods"`               // Получаем строку с товарами без макетов
+        GoodsWithMakets  string `json:"goods_with_makets"`  // Получаем строку с товарами с макетами
+    }
+
+    // Декодируем JSON из тела запроса
+    if err := json.NewDecoder(r.Body).Decode(&requestBody); err != nil {
+        http.Error(w, "Bad request", http.StatusBadRequest)
+        return
+    }
+    defer r.Body.Close() // Закрываем тело запроса после декодирования
+
+    // Получаем сессию
+    session, err := store.Get(r, "session-name")
+    if err != nil || session.Values["userEmail"] == nil {
+        http.Error(w, "Unauthorized", http.StatusUnauthorized)
+        return
+    }
+
+    email := session.Values["userEmail"].(string)
+
+    // Обновляем поле Goods в базе данных только для товаров без макетов
+    if requestBody.Goods != "" {
+        if _, err = db.Exec("UPDATE users SET goods = goods || $1 WHERE email = $2", requestBody.Goods+";", email); err != nil {
+            http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+            return
+        }
+    }
+
+    // Обновляем поле GoodsWithMakets в базе данных только для товаров с макетами
+    if requestBody.GoodsWithMakets != "" {
+        if _, err = db.Exec("UPDATE users SET goods_with_makets = goods_with_makets || $1 WHERE email = $2", requestBody.GoodsWithMakets+";", email); err != nil {
+            http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+            return
+        }
+    }
+
+    // Возвращаем успешный ответ
+    w.WriteHeader(http.StatusOK)
+    json.NewEncoder(w).Encode(map[string]string{"message": "Товар успешно добавлен в корзину"})
+}
+
+
+
+func getGoodsWithMaketsHandler(w http.ResponseWriter, r *http.Request) {
+    // Проверяем сессию пользователя
+    session, err := store.Get(r, "session-name")
+    if err != nil || session.Values["userEmail"] == nil {
+        http.Error(w, "Unauthorized", http.StatusUnauthorized)
+        return
+    }
+
+    email := session.Values["userEmail"].(string)
+    var goodsWithMakets string
+
+    // Запрашиваем данные из базы данных
+    err = db.QueryRow("SELECT goods_with_makets FROM users WHERE email = $1", email).Scan(&goodsWithMakets)
+    if err != nil {
+        http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+        return
+    }
+
+    // Возвращаем данные в формате JSON
+    response := map[string]string{"goods_with_makets": goodsWithMakets}
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(response)
+}
+
 
 func main() {
 	initDB()
@@ -822,6 +891,8 @@ func main() {
     http.HandleFunc("/api/checkUserFields", handleCheckUserFields)
     http.HandleFunc("/api/changeLogin", changeLoginHandler)
     http.HandleFunc("/api/gemini", geminiHandler)
+    http.HandleFunc("/api/addToCart", addToCartHandler)
+    http.HandleFunc("/api/getGoodsWithMakets", getGoodsWithMaketsHandler)
 
 	// fmt.Println("Сервер запущен на http://localhost:8080")
 	fmt.Println("Сервер запущен на https://46k2wbxg-8080.euw.devtunnels.ms/")

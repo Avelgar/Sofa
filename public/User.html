@@ -22,7 +22,7 @@
                     <a style="color:black; margin-right: 15px; border-bottom: 2px solid #9c131d;">Главная</a>
                     <a href="/public/Profile.html">Профиль</a>
                     <a>Избранное</a>
-                    <a>Заказы</a>
+                    <a href="/public/basket.html">Заказы</a>
                     <a @click.prevent="openExitModal" style="margin-right: 15px;">Выход</a>
                 </div>
             </div>
@@ -39,7 +39,7 @@
             <a style="text-decoration: underline; color:black"><b>Главная</b></a>
             <a href="/public/Profile.html">Профиль</a>
             <a>Избранное</a>
-            <a>Заказы</a>
+            <a href="/public/basket.html">Заказы</a>
             <a @click.prevent="openExitModal">Выход</a>
         </nav>
     </aside>
@@ -78,19 +78,53 @@
             <div class="modal-content" @click.stop>
                 <span class="close" @click="closeProductModal">&times;</span>
                 <h2>{{ selectedProduct.name }}</h2>
-                <p>Материал: {{ selectedProduct.material }}</p>
-                <p>Размер: {{ selectedProduct.size }}</p>
-                <p>Минимальное количество для заказа: {{ selectedProduct.min_order_quantity }}</p>
                 <p>Описание: {{ selectedProduct.description }}</p>
-                
+                <p>Минимальное количество для заказа: {{ selectedProduct.min_order_quantity }}</p>
+                <p>Шаг: {{ selectedProduct.multiplicity }}</p>
+                <p>Цена: {{ selectedProduct.price }} ₽</p>
+                <p>Типография: {{ selectedProduct.tipography }}</p>
+            
+                <a :href="selectedProduct.original_link" target="_blank">Ссылка на товар</a>
+            
                 <label for="quantity">Количество:</label>
-                <input type="number" id="quantity" v-model="quantity" :min="selectedProduct.min_order_quantity" />
-
-                <p>Цена: {{ (selectedProduct.price * quantity).toFixed(2) }} ₽</p>
-
+                <input type="number" id="quantity" v-model="quantity" 
+                       :min="selectedProduct.min_order_quantity" 
+                       :step="selectedProduct.multiplicity" />                
+            
+                <!-- Поля для товаров, где нужен макет -->
+                <div v-if="selectedProduct.need_maket">
+                    <label for="color_selection">Выберите цвет: {{ selectedProduct.color_profile }}</label>
+                    <div v-if="selectedProduct.color_profile === 'RGB'">
+                        <input type="color" v-model="selectedColor" @input="updateColorDisplay" />
+                        <p>Выбранный цвет: <span :style="{ color: selectedColor }">{{ selectedColor }}</span></p> <!-- Отображение выбранного цвета -->
+                    </div>
+                    <div v-if="selectedProduct.color_profile === 'CMYK'">
+                        <input type="text" v-model="selectedColor" placeholder="Введите CMYK" />
+                        <div class="cmyk-palette">
+                            <div v-for="color in cmykColors" :key="color" 
+                                 :style="{ backgroundColor: color }" 
+                                 @click="selectColor(color)">
+                            </div>
+                        </div>
+                    </div>
+                    <div v-if="selectedProduct.color_profile === 'Pantone 123C'">
+                        <input type="text" v-model="selectedColor" placeholder="Введите Pantone" />
+                        <div class="pantone-palette">
+                            <div v-for="color in pantoneColors" :key="color" 
+                                 :style="{ backgroundColor: color }" 
+                                 @click="selectColor(color)">
+                            </div>
+                        </div>
+                    </div>
+            
+                    <label for="maket_format">Формат макета: ({{ selectedProduct.maket_format }}):</label>
+                    <input type="file" accept=".jpg, .png" @change="checkFileFormat($event, selectedProduct)" />
+                </div>
+            
                 <button @click="addToCart">Добавить в корзину</button>
             </div>
         </div>
+                
 
     </main>
     

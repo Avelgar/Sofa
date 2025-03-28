@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Просмотр товаров с макетами</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            text-align: center;
+        }
+        .image-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .image-item {
+            margin: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            overflow: hidden;
+            width: 200px;
+        }
+        .image-item img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <a href="/public/User.html">Назад</a>
+    <h1>Товары с макетами</h1>
+    <div class="image-container" id="imageContainer"></div>
+
+    <script>
+        // Функция для получения товаров с макетами
+        async function fetchGoodsWithMakets() {
+            try {
+                const response = await fetch('/api/getGoodsWithMakets', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Ошибка при получении данных');
+                }
+
+                const data = await response.json();
+                displayImages(data.goods_with_makets);
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('Не удалось загрузить товары с макетами');
+            }
+        }
+
+        // Функция для отображения изображений на странице
+        function displayImages(goodsWithMakets) {
+            const imageContainer = document.getElementById('imageContainer');
+            const items = goodsWithMakets.split(';'); // Предполагаем, что товары разделены точкой с запятой
+
+            items.forEach(item => {
+                const details = item.split('|');
+                if (details.length >= 4) { // Проверяем, что есть необходимые данные
+                    const article = details[0];
+                    const quantity = details[1];
+                    const color = details[2];
+                    const imageData = details[3];
+
+                    const imageItem = document.createElement('div');
+                    imageItem.className = 'image-item';
+                    imageItem.innerHTML = `
+                        <h4>Артикул: ${article}</h4>
+                        <p>Количество: ${quantity}</p>
+                        <p>Цвет: ${color}</p>
+                        <img src="data:image/png;base64,${imageData}" alt="Макет">
+                    `;
+                    imageContainer.appendChild(imageItem);
+                }
+            });
+        }
+
+
+        // Вызываем функцию при загрузке страницы
+        window.onload = fetchGoodsWithMakets;
+    </script>
+
+</body>
+</html>
