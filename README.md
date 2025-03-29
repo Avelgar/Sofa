@@ -56,12 +56,20 @@ CREATE TABLE users (
     sign_up_token VARCHAR(255),
     sign_up_token_del_time TIMESTAMP,
     recovery_token VARCHAR(255),
-    recovery_token_del_time TIMESTAMP,
-    goods TEXT,
-    goods_with_makets TEXT
+    recovery_token_del_time TIMESTAMP
 );
 ```
 8.1 В Command Promt написать следующую команду
+```
+CREATE TABLE basket (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(255),
+    article VARCHAR(255),
+    quantity INT,
+    image_data BYTEA
+);
+```
+8.2 В Command Promt написать следующую команду
 ```
 CREATE TABLE goods (
     id SERIAL PRIMARY KEY,          
@@ -79,7 +87,7 @@ CREATE TABLE goods (
     color_profile TEXT
 );
 ```
-8.2 В Command Promt написать следующую команду
+8.3 В Command Promt написать следующую команду
 ```
 INSERT INTO goods (
     name, price, photo, article, min_order_quantity, multiplicity, 
