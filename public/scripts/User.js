@@ -130,7 +130,11 @@ new Vue({
         validateCartData() {
             const isQuantityValid = this.quantity >= this.selectedProduct.min_order_quantity &&
                                     this.quantity % this.selectedProduct.multiplicity === 0;
-            return isQuantityValid;
+            
+            // Проверка на необходимость прикрепления файла
+            const isFileValid = !this.selectedProduct.need_maket || (this.selectedProduct.need_maket && this.uploadedFile !== null);
+        
+            return isQuantityValid && isFileValid; // Возвращаем true только если оба условия выполняются
         },
         addToCart() {
             if (this.validateCartData()) {
@@ -161,7 +165,11 @@ new Vue({
                     this.showNotification('Ошибка при добавлении товара в корзину', 'error');
                 });
             } else {
-                this.showNotification('Количество должно быть больше минимального и делиться на шаг.', 'error');
+                if (this.selectedProduct.need_maket && !this.uploadedFile) {
+                    this.showNotification('Необходимо прикрепить файл для этого товара.', 'error');
+                } else {
+                    this.showNotification('Количество должно быть больше минимального и делиться на шаг.', 'error');
+                }
             }
         },          
         openExitModal() {

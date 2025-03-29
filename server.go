@@ -585,10 +585,10 @@ func getgoodsHandler(w http.ResponseWriter, r *http.Request) {
 
     if user.Nickname == "" && user.VK == "" {
         // Запрос для пользователей без никнейма и VK
-        query = "SELECT name, price, photo FROM goods WHERE need_maket = false"
+        query = "SELECT name, price, photo, article, min_order_quantity, multiplicity, description FROM goods WHERE need_maket = false"
     } else {
         // Запрос для пользователей с никнеймом или VK, включая maket_format и color_profile
-        query = "SELECT name, price, photo, article, min_order_quantity, multiplicity, description, original_link, tipography, need_maket, maket_format, color_profile FROM goods"
+        query = "SELECT name, price, photo, article, min_order_quantity, multiplicity, description, need_maket, maket_format, color_profile FROM goods"
     }
 
     rows, err = db.Query(query)
@@ -603,17 +603,15 @@ func getgoodsHandler(w http.ResponseWriter, r *http.Request) {
     for rows.Next() {
         var good Good
         if user.Nickname == "" && user.VK == "" {
-            // Считываем только необходимые поля для ограниченного запроса
-            if err := rows.Scan(&good.Name, &good.Price, &good.Photo); err != nil {
+            if err := rows.Scan(&good.Name, &good.Price, &good.Photo, &good.Article, &good.MinOrderQuantity, &good.Multiplicity, &good.Description); err != nil {
                 http.Error(w, fmt.Sprintf("Scan error: %v", err), http.StatusInternalServerError)
                 return
             }
         } else {
-            // Считываем все поля для полного запроса
             var maketFormat sql.NullString
             var colorProfile sql.NullString
             
-            if err := rows.Scan(&good.Name, &good.Price, &good.Photo, &good.Article, &good.MinOrderQuantity, &good.Multiplicity, &good.Description, &good.OriginalLink, &good.Tipography, &good.NeedMaket, &maketFormat, &colorProfile); err != nil {
+            if err := rows.Scan(&good.Name, &good.Price, &good.Photo, &good.Article, &good.MinOrderQuantity, &good.Multiplicity, &good.Description, &good.NeedMaket, &maketFormat, &colorProfile); err != nil {
                 http.Error(w, fmt.Sprintf("Scan error: %v", err), http.StatusInternalServerError)
                 return
             }
@@ -801,6 +799,18 @@ func profilePageHandler(w http.ResponseWriter, r *http.Request) {
     http.ServeFile(w, r, "./public/Profile.html")
 }
 
+func basketPageHandler(w http.ResponseWriter, r *http.Request) {
+    // Проверяем аутентификацию
+    session, err := store.Get(r, "session-name")
+    if err != nil || session.Values["authenticated"] == nil || session.Values["authenticated"] == false {
+        // Если пользователь не аутентифицирован, перенаправляем его на главную страницу
+        http.Redirect(w, r, "/public/Sofa.html", http.StatusFound)
+        return
+    }
+
+    http.ServeFile(w, r, "./public/Basket.html")
+}
+
 func addToCartHandler(w http.ResponseWriter, r *http.Request) {
     if err := r.ParseMultipartForm(10 << 20); err != nil { // Ограничение на 10MB
         http.Error(w, "Bad request", http.StatusBadRequest)
@@ -851,7 +861,14 @@ func addToCartHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 
-
+type Item struct {
+    ID        int     `json:"id"`
+    Article   string  `json:"article"`
+    Quantity  int     `json:"quantity"`
+    ImageData string  `json:"image_data,omitempty"` // Оставляем как string для base64
+    Name      string  `json:"name"`
+    Price     float64 `json:"price"`
+}
 
 func getBasketItemsHandler(w http.ResponseWriter, r *http.Request) {
     session, err := store.Get(r, "session-name")
@@ -862,27 +879,33 @@ func getBasketItemsHandler(w http.ResponseWriter, r *http.Request) {
 
     email := session.Values["userEmail"].(string)
 
-    rows, err := db.Query("SELECT id, email, article, quantity, image_data FROM basket WHERE email = $1", email)
+    rows, err := db.Query("SELECT b.id, b.article, b.quantity, b.image_data, g.name, g.price FROM basket b JOIN goods g ON b.article = g.article WHERE b.email = $1", email)
     if err != nil {
         http.Error(w, "Internal Server Error", http.StatusInternalServerError)
         return
     }
     defer rows.Close()
 
-    var items []Basket
+    var items []Item // Используем новую структуру
+
     for rows.Next() {
-        var item Basket
-        var imageData []byte
+        var item Item // Используем новую структуру для каждого товара
 
         // Сканируем данные из строки
-        if err := rows.Scan(&item.ID, &item.Email, &item.Article, &item.Quantity, &imageData); err != nil {
+        var imageData []byte // Используем []byte для сканирования
+        if err := rows.Scan(&item.ID, &item.Article, &item.Quantity, &imageData, &item.Name, &item.Price); err != nil {
             http.Error(w, "Internal Server Error", http.StatusInternalServerError)
             return
         }
-        if imageData != nil {
+
+        // Кодируем изображение в base64, если оно не пустое
+        if len(imageData) > 0 { // Проверяем, что изображение не пустое
             item.ImageData = base64.StdEncoding.EncodeToString(imageData) // Кодируем изображение в base64
+        } else {
+            item.ImageData = "" // Убедимся, что поле не остается пустым
         }
-        items = append(items, item)
+
+        items = append(items, item) // Добавляем товар в список
     }
 
     // Проверка на ошибки после завершения цикла
@@ -896,6 +919,45 @@ func getBasketItemsHandler(w http.ResponseWriter, r *http.Request) {
     json.NewEncoder(w).Encode(items)
 }
 
+func removeFromBasketHandler(w http.ResponseWriter, r *http.Request) {
+    session, err := store.Get(r, "session-name")
+    if err != nil || session.Values["userEmail"] == nil {
+        http.Error(w, "Unauthorized", http.StatusUnauthorized)
+        return
+    }
+
+    email := session.Values["userEmail"].(string)
+    itemId := r.URL.Path[len("/api/removeFromBasket/"):]
+
+    _, err = db.Exec("DELETE FROM basket WHERE id = $1 AND email = $2", itemId, email)
+    if err != nil {
+        http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+        return
+    }
+
+    w.WriteHeader(http.StatusNoContent) // Успешно удалено
+}
+
+
+func payForItemsHandler(w http.ResponseWriter, r *http.Request) {
+    session, err := store.Get(r, "session-name")
+    if err != nil || session.Values["userEmail"] == nil {
+        http.Error(w, "Unauthorized", http.StatusUnauthorized)
+        return
+    }
+
+    email := session.Values["userEmail"].(string)
+
+    // Логика оплаты (например, обновление статуса заказа и очистка корзины)
+    _, err = db.Exec("DELETE FROM basket WHERE email = $1", email)
+    if err != nil {
+        http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+        return
+    }
+
+    w.WriteHeader(http.StatusOK)
+    json.NewEncoder(w).Encode(map[string]string{"message": "Оплата прошла успешно!"})
+}
 
 
 func main() {
@@ -910,6 +972,7 @@ func main() {
 	})
     http.HandleFunc("/public/User.html", userPageHandler)
     http.HandleFunc("/public/Profile.html", profilePageHandler)
+    http.HandleFunc("/public/Basket.html", basketPageHandler)
 	http.HandleFunc("/SignUpUser", SignUpUserHandler)
     http.HandleFunc("/api/checkToken", handleCheckToken)
     http.HandleFunc("/Recovery", recoveryHandler)
@@ -926,7 +989,9 @@ func main() {
     http.HandleFunc("/api/gemini", geminiHandler)
     http.HandleFunc("/api/addToCart", addToCartHandler)
     http.HandleFunc("/api/getBasketItems", getBasketItemsHandler)
-
+    http.HandleFunc("/api/removeFromBasket/", removeFromBasketHandler)
+    http.HandleFunc("/api/payForItems", payForItemsHandler)
+    
 	// fmt.Println("Сервер запущен на http://localhost:8080")
 	fmt.Println("Сервер запущен на https://46k2wbxg-8080.euw.devtunnels.ms/")
 	log.Fatal(http.ListenAndServe(":8080", nil))
