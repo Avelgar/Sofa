@@ -53,9 +53,6 @@ new Vue({
         isProductModalOpen: false,
         selectedProduct: {},
         quantity: 1,
-        selectedColor: '',
-        cmykColors: ['#FF0000', '#00FF00', '#0000FF', '#FFFF00'],
-        pantoneColors: ['#F6EB61', '#D7A3D2', '#EAB8B1', '#F78DA7'],
         uploadedFile: null,
     },
     mounted() {
@@ -112,7 +109,6 @@ new Vue({
         openProductModal(good) {
             this.selectedProduct = good; // Сохраняем выбранный товар
             this.quantity = good.min_order_quantity; // Устанавливаем минимальное количество
-            this.selectedColor = ''; // Сбрасываем выбранный цвет
             this.isProductModalOpen = true; // Открываем модальное окно
         },
         closeProductModal() {
@@ -131,101 +127,43 @@ new Vue({
                 this.uploadedFile = file;
             }
         },
-        updateColorOptions() {
-            const product = this.selectedProduct; 
-            if (product) {
-                if (product.color_profile === 'RGB') {
-                    this.colorOptions = ['#FF0000', '#00FF00', '#0000FF'];
-                } else if (product.color_profile === 'CMYK') {
-                    this.colorOptions = ['0,0,0,0', '0,100,100,0'];
-                } else if (product.color_profile === 'Pantone') {
-                    this.colorOptions = ['Pantone 123C', 'Pantone 456C'];
-                }
-            }
-        },
-        selectColor(color) {
-            this.selectedColor = color;
-        },
-        updateColorDisplay() {
-            
-        },
         validateCartData() {
             const isQuantityValid = this.quantity >= this.selectedProduct.min_order_quantity &&
                                     this.quantity % this.selectedProduct.multiplicity === 0;
-    
-            const isColorSelected = this.selectedProduct.need_maket ? this.selectedColor !== '' : true;
-    
-            return isQuantityValid && isColorSelected;
+            return isQuantityValid;
         },
         addToCart() {
             if (this.validateCartData()) {
-                let goodsString = `${this.selectedProduct.article}|${this.quantity}`; // формируем строку для товаров без макетов
-                let goodsWithMaketString = '';
+                const formData = new FormData();
+                formData.append('article', this.selectedProduct.article);
+                formData.append('quantity', this.quantity);
         
                 if (this.selectedProduct.need_maket) {
-                    const file = this.uploadedFile; // Получаем файл
-                    const reader = new FileReader();
-                    reader.onload = () => {
-                        const fileContent = reader.result.split(',')[1]; // Извлекаем только часть Base64 без префикса
-                        goodsWithMaketString = `${this.selectedProduct.article}|${this.quantity}|${this.selectedColor}|${fileContent}`;
-        
-                        // Теперь отправляем данные на сервер
-                        fetch('/api/addToCart', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ 
-                                goods_with_makets: goodsWithMaketString 
-                            }), // Отправляем только товары с макетами
-                        })
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Ошибка при добавлении товара в корзину');
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            this.showNotification('Товар добавлен в корзину!', 'success');
-                            this.closeProductModal(); // Закрываем модальное окно
-                        })
-                        .catch(error => {
-                            console.error('Ошибка:', error);
-                            this.showNotification('Ошибка при добавлении товара в корзину', 'error');
-                        });
-                    };
-        
-                    reader.readAsDataURL(file); // Читаем содержимое файла
-                } else {
-                    // Если макет не нужен, просто отправляем пустую строку
-                    fetch('/api/addToCart', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ 
-                            goods: goodsString 
-                        }), // Отправляем только товары без макетов
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Ошибка при добавлении товара в корзину');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        this.showNotification('Товар добавлен в корзину!', 'success');
-                        this.closeProductModal(); // Закрываем модальное окно
-                    })
-                    .catch(error => {
-                        console.error('Ошибка:', error);
-                        this.showNotification('Ошибка при добавлении товара в корзину', 'error');
-                    });
+                    formData.append('file', this.uploadedFile); // Добавляем файл изображения
                 }
+        
+                fetch('/api/addToCart', {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Ошибка при добавлении товара в корзину');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    this.showNotification('Товар добавлен в корзину!', 'success');
+                    this.closeProductModal();
+                })
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                    this.showNotification('Ошибка при добавлении товара в корзину', 'error');
+                });
             } else {
                 this.showNotification('Количество должно быть больше минимального и делиться на шаг.', 'error');
             }
-        },               
+        },          
         openExitModal() {
             this.isExitModalOpen = true;
         },
@@ -250,9 +188,6 @@ new Vue({
         }
     },
     watch: {
-        selectedProduct(newProduct) {
-            this.updateColorOptions();
-        },
         isExitModalOpen(newValue) {
             this.$nextTick(() => {
                 const modal = document.querySelector('.modal');

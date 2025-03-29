@@ -73,7 +73,7 @@
                 </form>
             </div>
         </div>
-
+        
         <div v-if="isProductModalOpen" class="modal" @mousedown="handleMouseDown" @mouseup="handleMouseUp"> 
             <div class="modal-content" @click.stop>
                 <span class="close" @click="closeProductModal">&times;</span>
@@ -93,34 +93,10 @@
             
                 <!-- Поля для товаров, где нужен макет -->
                 <div v-if="selectedProduct.need_maket">
-                    <label for="color_selection">Выберите цвет: {{ selectedProduct.color_profile }}</label>
-                    <div v-if="selectedProduct.color_profile === 'RGB'">
-                        <input type="color" v-model="selectedColor" @input="updateColorDisplay" />
-                        <p>Выбранный цвет: <span :style="{ color: selectedColor }">{{ selectedColor }}</span></p> <!-- Отображение выбранного цвета -->
-                    </div>
-                    <div v-if="selectedProduct.color_profile === 'CMYK'">
-                        <input type="text" v-model="selectedColor" placeholder="Введите CMYK" />
-                        <div class="cmyk-palette">
-                            <div v-for="color in cmykColors" :key="color" 
-                                 :style="{ backgroundColor: color }" 
-                                 @click="selectColor(color)">
-                            </div>
-                        </div>
-                    </div>
-                    <div v-if="selectedProduct.color_profile === 'Pantone 123C'">
-                        <input type="text" v-model="selectedColor" placeholder="Введите Pantone" />
-                        <div class="pantone-palette">
-                            <div v-for="color in pantoneColors" :key="color" 
-                                 :style="{ backgroundColor: color }" 
-                                 @click="selectColor(color)">
-                            </div>
-                        </div>
-                    </div>
-            
                     <label for="maket_format">Формат макета: ({{ selectedProduct.maket_format }}):</label>
                     <input type="file" accept=".jpg, .png" @change="checkFileFormat($event, selectedProduct)" />
                 </div>
-            
+                
                 <button @click="addToCart">Добавить в корзину</button>
             </div>
         </div>

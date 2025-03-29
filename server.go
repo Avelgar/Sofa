@@ -11,6 +11,7 @@ import (
     "time"
     "bytes"
     "io/ioutil"
+    "encoding/base64"
 
 	"github.com/gorilla/sessions"
 	_ "github.com/lib/pq"
@@ -27,8 +28,6 @@ type User struct {
     SignUpTokenDelTime   *time.Time `json:"sign_up_token_del_time"`
     RecoveryToken        *string   `json:"recovery_token"`
     RecoveryTokenDelTime *time.Time `json:"recovery_token_del_time"`
-    Goods                string    `json:"goods"`
-    GoodsWithMakets      string    `json:"goods_with_makets"`
 }
 
 type Good struct {
@@ -45,6 +44,15 @@ type Good struct {
     MaketFormat          *string  `json:"maket_format"`        // Поле maket_format
     ColorProfile         *string  `json:"color_profile"`       // Поле color_profile
 }
+
+type Basket struct {
+    ID        int     `json:"id"`
+    Email     string  `json:"email"`
+    Article   string  `json:"article"`
+    Quantity  int     `json:"quantity"`
+    ImageData string  `json:"image_data,omitempty"` // Измените []byte на string
+}
+
 
 type RequestBody struct {
     Input string `json:"input"`
@@ -185,11 +193,9 @@ func SignUpUserHandler(w http.ResponseWriter, r *http.Request) {
     user.RecoveryToken = nil
     user.RecoveryTokenDelTime = nil
     user.IsBanned = false
-    user.Goods = ""          
-    user.GoodsWithMakets = ""
 
-    _, err = db.Exec("INSERT INTO users (login, email, password, is_banned, nickname, vk, sign_up_token, sign_up_token_del_time, recovery_token, recovery_token_del_time, goods, goods_with_makets) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)",
-        user.Login, user.Email, user.Password, user.IsBanned, user.Nickname, user.VK, user.SignUpToken, user.SignUpTokenDelTime, user.RecoveryToken, user.RecoveryTokenDelTime, user.Goods, user.GoodsWithMakets)
+    _, err = db.Exec("INSERT INTO users (login, email, password, is_banned, nickname, vk, sign_up_token, sign_up_token_del_time, recovery_token, recovery_token_del_time) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
+        user.Login, user.Email, user.Password, user.IsBanned, user.Nickname, user.VK, user.SignUpToken, user.SignUpTokenDelTime, user.RecoveryToken, user.RecoveryTokenDelTime)
     
     if err != nil {
         log.Println("Error inserting user into database:", err)
@@ -796,17 +802,10 @@ func profilePageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func addToCartHandler(w http.ResponseWriter, r *http.Request) {
-    var requestBody struct {
-        Goods            string `json:"goods"`               // Получаем строку с товарами без макетов
-        GoodsWithMakets  string `json:"goods_with_makets"`  // Получаем строку с товарами с макетами
-    }
-
-    // Декодируем JSON из тела запроса
-    if err := json.NewDecoder(r.Body).Decode(&requestBody); err != nil {
+    if err := r.ParseMultipartForm(10 << 20); err != nil { // Ограничение на 10MB
         http.Error(w, "Bad request", http.StatusBadRequest)
         return
     }
-    defer r.Body.Close() // Закрываем тело запроса после декодирования
 
     // Получаем сессию
     session, err := store.Get(r, "session-name")
@@ -817,17 +816,30 @@ func addToCartHandler(w http.ResponseWriter, r *http.Request) {
 
     email := session.Values["userEmail"].(string)
 
-    // Обновляем поле Goods в базе данных только для товаров без макетов
-    if requestBody.Goods != "" {
-        if _, err = db.Exec("UPDATE users SET goods = goods || $1 WHERE email = $2", requestBody.Goods+";", email); err != nil {
+    article := r.FormValue("article")
+    quantity := r.FormValue("quantity")
+
+    // Проверяем, есть ли файл изображения
+    if file, _, err := r.FormFile("file"); err == nil {
+        defer file.Close()
+
+        // Читаем файл в байты
+        imageData, err := ioutil.ReadAll(file)
+        if err != nil {
+            http.Error(w, "Unable to read file", http.StatusInternalServerError)
+            return
+        }
+
+        // Записываем товар с макетом в таблицу basket
+        _, err = db.Exec("INSERT INTO basket (email, article, quantity, image_data) VALUES ($1, $2, $3, $4)", email, article, quantity, imageData)
+        if err != nil {
             http.Error(w, "Internal Server Error", http.StatusInternalServerError)
             return
         }
-    }
-
-    // Обновляем поле GoodsWithMakets в базе данных только для товаров с макетами
-    if requestBody.GoodsWithMakets != "" {
-        if _, err = db.Exec("UPDATE users SET goods_with_makets = goods_with_makets || $1 WHERE email = $2", requestBody.GoodsWithMakets+";", email); err != nil {
+    } else {
+        // Если файла нет, добавляем товар без макета
+        _, err := db.Exec("INSERT INTO basket (email, article, quantity) VALUES ($1, $2, $3)", email, article, quantity)
+        if err != nil {
             http.Error(w, "Internal Server Error", http.StatusInternalServerError)
             return
         }
@@ -840,8 +852,8 @@ func addToCartHandler(w http.ResponseWriter, r *http.Request) {
 
 
 
-func getGoodsWithMaketsHandler(w http.ResponseWriter, r *http.Request) {
-    // Проверяем сессию пользователя
+
+func getBasketItemsHandler(w http.ResponseWriter, r *http.Request) {
     session, err := store.Get(r, "session-name")
     if err != nil || session.Values["userEmail"] == nil {
         http.Error(w, "Unauthorized", http.StatusUnauthorized)
@@ -849,20 +861,41 @@ func getGoodsWithMaketsHandler(w http.ResponseWriter, r *http.Request) {
     }
 
     email := session.Values["userEmail"].(string)
-    var goodsWithMakets string
 
-    // Запрашиваем данные из базы данных
-    err = db.QueryRow("SELECT goods_with_makets FROM users WHERE email = $1", email).Scan(&goodsWithMakets)
+    rows, err := db.Query("SELECT id, email, article, quantity, image_data FROM basket WHERE email = $1", email)
     if err != nil {
         http.Error(w, "Internal Server Error", http.StatusInternalServerError)
         return
     }
+    defer rows.Close()
 
-    // Возвращаем данные в формате JSON
-    response := map[string]string{"goods_with_makets": goodsWithMakets}
+    var items []Basket
+    for rows.Next() {
+        var item Basket
+        var imageData []byte
+
+        // Сканируем данные из строки
+        if err := rows.Scan(&item.ID, &item.Email, &item.Article, &item.Quantity, &imageData); err != nil {
+            http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+            return
+        }
+        if imageData != nil {
+            item.ImageData = base64.StdEncoding.EncodeToString(imageData) // Кодируем изображение в base64
+        }
+        items = append(items, item)
+    }
+
+    // Проверка на ошибки после завершения цикла
+    if err := rows.Err(); err != nil {
+        http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+        return
+    }
+
+    // Возвращаем успешный ответ с товарами
     w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(response)
+    json.NewEncoder(w).Encode(items)
 }
+
 
 
 func main() {
@@ -892,7 +925,7 @@ func main() {
     http.HandleFunc("/api/changeLogin", changeLoginHandler)
     http.HandleFunc("/api/gemini", geminiHandler)
     http.HandleFunc("/api/addToCart", addToCartHandler)
-    http.HandleFunc("/api/getGoodsWithMakets", getGoodsWithMaketsHandler)
+    http.HandleFunc("/api/getBasketItems", getBasketItemsHandler)
 
 	// fmt.Println("Сервер запущен на http://localhost:8080")
 	fmt.Println("Сервер запущен на https://46k2wbxg-8080.euw.devtunnels.ms/")
