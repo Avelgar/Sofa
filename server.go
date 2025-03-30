@@ -82,6 +82,8 @@ func sendMessageEmail(email, subject, body string) error {
 	username := "s.polo2005@yandex.ru"
 	password := "sltsjawwlrauzcfh"
 
+    subject = "=?UTF-8?B?" + base64.StdEncoding.EncodeToString([]byte(subject)) + "?="
+
 	msg := []byte("From: " + username + "\r\n" +
 		"To: " + email + "\r\n" +
 		"Subject: " + subject + "\r\n" +
