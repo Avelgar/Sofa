@@ -213,7 +213,7 @@ footer {
     font-size: large;
 }
 
-.modal-recovery, .modal{
+.modal-recovery, .modal-agreement, .modal{
     background-color: rgba(0, 0, 0, 0.4);
     height: 100%;
     left: 0;
@@ -231,6 +231,10 @@ footer {
 
 .modal-recovery{
     z-index:8;
+}
+
+.modal-agreement{
+    z-index: 8;
 }
 
 .modal-content {
@@ -354,6 +358,16 @@ form {
     text-decoration: none; /* Убираем подчеркивание */
     font-size: 18px; /* Размер иконки */
     cursor: pointer; /* Курсор при наведении */
+}
+
+.PerDataLink {
+    transition: 0.3s;
+    margin: 0px;
+}
+
+.PerDataLink:hover {
+    color: #9c131d;
+    transition: 0.3s;
 }
 
 .symbols-container {

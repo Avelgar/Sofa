@@ -138,8 +138,8 @@
                     <div class="password-container">
                         <input :type="isPasswordVisible ? 'text' : 'password'" id="user-password" required>
                         <a href="#" @click.prevent="togglePasswordVisibility" class="eye-link">
-                            <span v-if="isPasswordVisible">👁️</span>
-                            <span v-else>👁️‍🗨️</span>
+                            <span v-if="isPasswordVisible"><img src="assets/ShowPassword.png" style="height: 20px; width: 20px;"></span>
+                            <span v-else><img src="assets/HidePassword.png" style="height: 20px; width: 20px;"></span>
                         </a>
                     </div>
         
@@ -147,10 +147,16 @@
                     <div class="password-container">
                         <input :type="isPassword2Visible ? 'text' : 'password'" id="user-password-repeat" required>
                         <a href="#" @click.prevent="togglePassword2Visibility" class="eye-link">
-                            <span v-if="isPassword2Visible">👁️</span>
-                            <span v-else>👁️‍🗨️</span>
+                            <span v-if="isPassword2Visible"><img src="assets/ShowPassword.png" style="height: 20px; width: 20px;"></span>
+                            <span v-else><img src="assets/HidePassword.png" style="height: 20px; width: 20px;"></span>
                         </a>
                     </div>
+
+                    <div style="display: flex; text-align: center; line-height: 35px;">
+                        <input type="checkbox" required style="height: 25px; width: 25px;">
+                        <p> С <a class="PerDataLink" href="#" @click.prevent="openAgreementModal">порядком</a> обработки персональных данных ознакомлен</p>
+                    </div>
+                    
         
                     <button type="submit">Зарегистрироваться</button>
         
@@ -160,7 +166,7 @@
         </div>
         
 
-        <div v-if="isLogInModalOpen" class="modal"@mousedown="handleMouseDown" @mouseup="handleMouseUp"> 
+        <div v-if="isLogInModalOpen" class="modal" @mousedown="handleMouseDown" @mouseup="handleMouseUp"> 
             <div class="modal-content" @click.stop>
                 <span class="close" @click="closeLogInModal">&times;</span>
                 <h2>Войти в Sofa</h2>
@@ -171,8 +177,8 @@
                     <div class="password-container">
                         <input :type="isPasswordLoginVisible ? 'text' : 'password'" id="auth-password" required>
                         <a href="#" @click.prevent="togglePasswordLoginVisibility" class="eye-link">
-                            <span v-if="isPasswordLoginVisible">👁️</span>
-                            <span v-else>👁️‍🗨️</span>
+                            <span v-if="isPasswordLoginVisible"><img src="assets/ShowPassword.png" style="height: 20px; width: 20px;"></span>
+                            <span v-else><img src="assets/HidePassword.png" style="height: 20px; width: 20px;"></span>
                         </a>
                     </div>
                     <button type="submit">Войти</button>
@@ -190,6 +196,32 @@
                     <input id="RecoveryEmail" required>
                     <button type="submit">Подтвердить</button>
                 </form>
+            </div>
+        </div>
+
+        <div v-if="isAgreementModalOpen" class="modal-agreement"@mousedown="handleMouseDown" @mouseup="handleMouseUp"> 
+            <div class="modal-content" @click.stop>
+                <span class="close" @click="closeAgreementModal">&times;</span>
+                <h2>Согласие на обработку<br>персональных данных</h2>
+                <br>
+                <div style="text-indent: 2em;">
+                    <p  style="text-align: start;">
+                        Я (далее - Заявитель) даю согласие Sofa, ИНН [номер ИНН], г. Москва, Славянский бульвар, (далее — Оператор) на автоматизированную, а также без использования средств автоматизации, обработку моих персональных данных, предоставленных мною Оператору посредством сети Интернет через сайт [URL сайта], а именно <b>ФИО, адрес, номер, почта, VK ID</b> и т.д, включая сбор, запись, систематизацию, накопление, хранение, уточнение, извлечение, использование, передачу (предоставление, доступ), обезличивание, блокирование, удаления и уничтожения, а также на вышеуказанную обработку иных моих персональных данных, полученных в результате их обработки, включая обработку третьими лицами.<br>
+                    </p>
+                    <br>
+                    <p  style="text-align: start;">
+                        Целями обработки персональных данных является предоставления мне товаров и услуг.<br>
+                    </p>
+                    <br>
+                    <p  style="text-align: start;">
+                        Указанное согласие дано на неопределённый срок.<br>
+                    </p>
+                    <br>
+                    <p  style="text-align: start;">
+                        В случае, если в течение указанного срока с Заявителем будет заключен договор [наименование договора], настоящее Согласие Заявителя сохраняет силу в течение всего срока действия каждого договора, а также в течение [указать конкретный промежуток времени] с даты прекращения обязательств сторон по договорам. Я уведомлен, что предоставление указанного выше согласия является моим правом, а не обязанностью, данные согласия могут быть отозваны в порядке, предусмотренном законодательством Российской Федерации. Согласие может быть отозвано субъектом персональных данных путем обращения к Оператору с заявлением, оформленным в письменной форме.<br>
+                    </p>
+                </div>
+                
             </div>
         </div>
     </main>
