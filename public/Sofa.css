@@ -213,7 +213,7 @@ footer {
     font-size: large;
 }
 
-.modal-recovery, .modal{
+.modal-recovery, .modal-agreement, .modal{
     background-color: rgba(0, 0, 0, 0.4);
     height: 100%;
     left: 0;
@@ -231,6 +231,10 @@ footer {
 
 .modal-recovery{
     z-index:8;
+}
+
+.modal-agreement{
+    z-index: 8;
 }
 
 .modal-content {
@@ -356,6 +360,107 @@ form {
     cursor: pointer; /* Курсор при наведении */
 }
 
+.symbols-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Пробел между карточками */
+    margin: 20px;
+}
+
+.card:hover .card-fav {
+    display: flex;
+}
+
+.card-fav {
+    height: 25px;
+    width: 25px;
+    display: none;
+    position: absolute;
+    top: 150px;
+    right: -5px;
+    z-index: 6;
+}
+
+
+.card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 16px;
+    width: 200px; /* Ширина карточки */
+    text-align: center;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.card:hover {
+    cursor: pointer;
+    background-color: #eee;
+    border-color: #9c131d;
+}
+
+.card-image-block {
+    position: relative;
+}
+
+.card-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
+
+.card-title {
+    font-size: 1.2em;
+    margin: 10px 0;
+}
+
+.card-price {
+    font-size: 1.1em;
+    color: #333;
+}
+
+.card button {
+    margin: 10px auto 0 auto;
+    padding: 12px 20px;
+    background-color: #9c131d;
+    color: #fff;
+    border: 2px solid #9c131d;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+    font-size: 16px;
+}
+
+.card button:hover {
+    background-color: #fff;
+    color: #9c131d;
+    border: 2px solid #9c131d;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.card-image-small {
+    width: 50px; /* Размер маленького изображения */
+    height: auto; /* Авто высота для сохранения пропорций */
+}
+
+.card-image-large {
+    width: 100px; /* Размер большого изображения */
+    height: auto; /* Авто высота для сохранения пропорций */
+}
+
+.placeholder {
+    width: 50px; /* Размер серого квадрата */
+    height: 50px; /* Размер серого квадрата */
+    background-color: #ccc; /* Цвет фона серого квадрата */
+}
+
+.PerDataLink {
+    transition: 0.3s;
+    margin: 0px;
+}
+
+.PerDataLink:hover {
+    color: #9c131d;
+    transition: 0.3s;
+}
 
 @media screen and (max-width: 748px) {
     header{
@@ -472,97 +577,5 @@ form {
     padding: 5px;
     border: 1px solid #ccc;
     border-radius: 5px;
-}
-
-.symbols-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px; /* Пробел между карточками */
-    margin: 20px;
-}
-
-.card:hover .card-fav {
-    display: flex;
-}
-
-.card-fav {
-    height: 25px;
-    width: 25px;
-    display: none;
-    position: absolute;
-    top: 150px;
-    right: -5px;
-    z-index: 6;
-}
-
-
-.card {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 16px;
-    width: 200px; /* Ширина карточки */
-    text-align: center;
-    transition: background-color 0.3s, border-color 0.3s;
-}
-
-.card:hover {
-    cursor: pointer;
-    background-color: #eee;
-    border-color: #9c131d;
-}
-
-.card-image-block {
-    position: relative;
-}
-
-.card-image {
-    max-width: 100%;
-    height: auto;
-    border-radius: 5px;
-}
-
-.card-title {
-    font-size: 1.2em;
-    margin: 10px 0;
-}
-
-.card-price {
-    font-size: 1.1em;
-    color: #333;
-}
-
-.card button {
-    margin: 10px auto 0 auto;
-    padding: 12px 20px;
-    background-color: #9c131d;
-    color: #fff;
-    border: 2px solid #9c131d;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
-    font-size: 16px;
-}
-
-.card button:hover {
-    background-color: #fff;
-    color: #9c131d;
-    border: 2px solid #9c131d;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.card-image-small {
-    width: 50px; /* Размер маленького изображения */
-    height: auto; /* Авто высота для сохранения пропорций */
-}
-
-.card-image-large {
-    width: 100px; /* Размер большого изображения */
-    height: auto; /* Авто высота для сохранения пропорций */
-}
-
-.placeholder {
-    width: 50px; /* Размер серого квадрата */
-    height: 50px; /* Размер серого квадрата */
-    background-color: #ccc; /* Цвет фона серого квадрата */
 }
 

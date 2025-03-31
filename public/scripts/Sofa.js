@@ -72,7 +72,8 @@ new Vue({
         isPasswordVisible: false,
         isPassword2Visible: false,
         isPasswordLoginVisible: false,
-        isRecoveryModalOpen: false
+        isRecoveryModalOpen: false,
+        isAgreementModalOpen: false,
     },
     mounted() {
         this.fetchGoods();
@@ -116,7 +117,14 @@ new Vue({
         handleMouseUp(event) {
             if (this.isMouseDownOnBackdrop && event.target === event.currentTarget) {
                 if (this.isUserModalOpen) {
-                    this.closeUserModal();
+                    if(this.isAgreementModalOpen)
+                        {
+                            this.closeAgreementModal();
+                        }
+                        else
+                        {
+                            this.closeUserModal();
+                        }
                 } 
                 else if (this.isLogInModalOpen) {
                     if(this.isRecoveryModalOpen)
@@ -129,6 +137,12 @@ new Vue({
                 }
             }
             this.isMouseDownOnBackdrop = false;
+        },
+        openAgreementModal() {
+            this.isAgreementModalOpen = true;
+        },
+        closeAgreementModal(){
+            this.isAgreementModalOpen = false;
         },
         openUserModal() {  
             this.isUserModalOpen = true;
@@ -358,6 +372,14 @@ new Vue({
                 if (modal) {
                     modal.style.visibility = newValue ? 'visible' : 'hidden'; 
                 }
+            });
+        },
+        isAgreementModalOpen(newValue) {
+            this.$nextTick(() => {
+                    const modal = document.querySelector('.modal-agreement');
+                    if (modal) {
+                        modal.style.visibility = newValue ? 'visible' : 'hidden'; 
+                    }
             });
         }
     }
