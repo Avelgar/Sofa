@@ -54,6 +54,10 @@ new Vue({
         selectedProduct: {},
         quantity: 1,
         uploadedFile: null,
+        messages: [],
+        userInput: '',
+        isChatbotVisible: false,
+        messageHistory: []
     },
     mounted() {
         this.fetchGoods();
@@ -193,6 +197,68 @@ new Vue({
         },
         closeExitModal() {
             this.isExitModalOpen = false;
+        },
+        toggleChatbot() {
+            this.isChatbotVisible = !this.isChatbotVisible;
+        },
+        sendMessage() {
+            if (this.userInput.trim() === '') return;
+    
+            // Сохраняем текущее сообщение пользователя
+            const userMessage = this.userInput;
+    
+            // Очищаем поле ввода сразу после отправки сообщения
+            this.userInput = '';
+    
+            // Добавляем сообщение пользователя
+            this.messages.push({ id: Date.now(), text: userMessage, user: true });
+            this.messageHistory.push(`Пользователь: ${userMessage}`); // Сохраняем в истории
+    
+            // Здесь вы можете добавить логику для получения ответа от бота
+            this.getBotResponse(userMessage, this.messageHistory)
+                .then(botResponse => {
+                    this.messages.push({ id: Date.now() + 1, text: botResponse.response, user: false });
+                    this.messageHistory.push(`Бот: ${botResponse.response}`); // Сохраняем ответ бота в истории
+                    this.$nextTick(() => {
+                        this.$refs.messages.scrollTop = this.$refs.messages.scrollHeight;
+                    });
+                })
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                });
+        },
+        getBotResponse(input, history) {
+            return fetch('/api/gemini', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    input: input,
+                    history: history
+                }),                
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        if (text.includes('Method not allowed')) {
+                            this.showNotification('Метод не разрешен', 'error');
+                        } else if (text.includes('Invalid request body')) {
+                            this.showNotification('Неправильный запрос', 'error');
+                        } else if (text.includes('Error marshalling request')) {
+                            this.showNotification('Ошибка при формировании запроса', 'error');
+                        } else if (text.includes('Error contacting Gemini server')) {
+                            this.showNotification('Ошибка при обращении к серверу Gemini', 'error');
+                        } else if (text.includes('Error reading response')) {
+                            this.showNotification('Ошибка чтения ответа', 'error');
+                        } else {
+                            this.showNotification('Неизвестная ошибка. Попробуйте снова.', 'error');
+                        }
+                        throw new Error(text);
+                    });
+                }
+                return response.json();
+            });
         }
     },
     watch: {
