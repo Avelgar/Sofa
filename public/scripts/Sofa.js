@@ -74,73 +74,11 @@ new Vue({
         isPasswordLoginVisible: false,
         isRecoveryModalOpen: false,
         isAgreementModalOpen: false,
-        messages: [],
-        userInput: '',
-        isChatbotVisible: false
     },
     mounted() {
         this.fetchGoods();
     },
     methods: {
-        toggleChatbot() {
-            this.isChatbotVisible = !this.isChatbotVisible;
-        },
-        sendMessage() {
-            if (this.userInput.trim() === '') return;
-
-            // Сохраняем текущее сообщение пользователя
-            const userMessage = this.userInput;
-    
-            // Очищаем поле ввода сразу после отправки сообщения
-            this.userInput = '';
-    
-            // Добавляем сообщение пользователя
-            this.messages.push({ id: Date.now(), text: userMessage, user: true });
-    
-            // Здесь вы можете добавить логику для получения ответа от бота
-            this.getBotResponse(userMessage)
-                .then(botResponse => {
-                    this.messages.push({ id: Date.now() + 1, text: botResponse.response, user: false });
-                    this.$nextTick(() => {
-                        this.$refs.messages.scrollTop = this.$refs.messages.scrollHeight;
-                    });
-                })
-                .catch(error => {
-                    console.error('Ошибка:', error);
-                });
-        },
-        getBotResponse(input) {
-            return fetch('/api/gemini', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    input: input
-                }),                
-            })
-            .then(response => {
-                if (!response.ok) {
-                    return response.text().then(text => {
-                        if (text.includes('Method not allowed')) {
-                            this.showNotification('Метод не разрешен', 'error');
-                        } else if (text.includes('Invalid request body')) {
-                            this.showNotification('Неправильный запрос', 'error');
-                        } else if (text.includes('Error marshalling request')) {
-                            this.showNotification('Ошибка при формировании запроса', 'error');
-                        } else if (text.includes('Error contacting Gemini server')) {
-                            this.showNotification('Ошибка при обращении к серверу Gemini', 'error');
-                        } else if (text.includes('Error reading response')) {
-                            this.showNotification('Ошибка чтения ответа', 'error');
-                        } else {
-                            this.showNotification('Неизвестная ошибка. Попробуйте снова.', 'error');
-                        }
-                        throw new Error(text); // Прерываем выполнение, чтобы не продолжать с неудачным ответом
-                    });
-                }
-                return response.json(); // Возвращаем JSON-ответ
-            });
-        },
         fetchGoods() {
             fetch('/sofa/getgoods')
             .then(response => {
@@ -188,6 +126,15 @@ new Vue({
                         this.closeUserModal();
                     }
                 }
+                    if(this.isAgreementModalOpen)
+                        {
+                            this.closeAgreementModal();
+                        }
+                        else
+                        {
+                            this.closeUserModal();
+                        }
+                } 
                 else if (this.isLogInModalOpen) {
                     if(this.isRecoveryModalOpen)
                     {
@@ -200,6 +147,12 @@ new Vue({
                 }
             }
             this.isMouseDownOnBackdrop = false;
+        },
+        openAgreementModal() {
+            this.isAgreementModalOpen = true;
+        },
+        closeAgreementModal(){
+            this.isAgreementModalOpen = false;
         },
         openUserModal() {  
             this.isUserModalOpen = true;
@@ -435,6 +388,14 @@ new Vue({
                 if (modal) {
                     modal.style.visibility = newValue ? 'visible' : 'hidden'; 
                 }
+            });
+        },
+        isAgreementModalOpen(newValue) {
+            this.$nextTick(() => {
+                    const modal = document.querySelector('.modal-agreement');
+                    if (modal) {
+                        modal.style.visibility = newValue ? 'visible' : 'hidden'; 
+                    }
             });
         },
         isAgreementModalOpen(newValue) {

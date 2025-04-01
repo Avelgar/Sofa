@@ -33,31 +33,61 @@ function updateBasket() {
         const basketItemsDiv = document.getElementById('basket-items');
         basketItemsDiv.innerHTML = ''; // Очистка контейнера перед добавлением новых элементов
 
-        if (data.length === 0) {
+        // Проверка, что data не null и является массивом
+        if (Array.isArray(data) && data.length === 0) {
             basketItemsDiv.innerHTML = '<p>Ваша корзина пуста.</p>';
-        } else {
+        } else if (Array.isArray(data)) {
+            console.log(data);
             let totalPrice = 0; // Переменная для хранения общей стоимости
             data.forEach(item => {
-                const itemDiv = document.createElement('div');
                 const itemPrice = item.price * item.quantity; // Общая стоимость для этого товара
                 totalPrice += itemPrice; // Добавляем к общей стоимости
 
-                itemDiv.innerHTML = `
-                    <h2>Товар: ${item.name}</h2>
-                    <p>Количество: ${item.quantity}</p>
-                    <p>Цена: ${item.price} ₽</p>
-                    <p>Итого: ${itemPrice} ₽</p>
-                    ${item.image_data ? `<img src="data:image/png;base64,${item.image_data}" alt="${item.article}" style="max-width: 200px;"/>` : ''}
-                    <button onclick="removeFromBasket(${item.id})">Удалить из корзины</button>
-                `;
-                basketItemsDiv.appendChild(itemDiv);
+                // Создаем карточку товара
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'card';
+                if (item.imageData){
+                    itemDiv.innerHTML = `
+                        <div class="card-image-block">
+                            <img src="${item.photo}" alt="${item.name}" class="card-image" />
+                        </div>
+                        <h3 class="card-title">${item.name}</h3>
+                        <p>${item.description || 'Нет описания'}</p>
+                        <div class="card-image-block">
+                            <img src="data:image/png;base64,${item.imageData}" alt="${item.name}" class="card-image-small" />
+                        </div>
+                        <p class="card-price">${item.price} ₽</p>
+                        <p>Количество: ${item.quantity}</p>
+                        <p>Итого: ${itemPrice} ₽</p>
+                        <button onclick="removeFromBasket(${item.id})">Удалить из корзины</button>
+                    `;
+                    basketItemsDiv.appendChild(itemDiv);
+                } else{
+                    itemDiv.innerHTML = `
+                        <div class="card-image-block">
+                            <img src="${item.photo}" alt="${item.name}" class="card-image" />
+                        </div>
+                        <h3 class="card-title">${item.name}</h3>
+                        <p>${item.description || 'Нет описания'}</p>
+                        <p class="card-price">${item.price} ₽</p>
+                        <p>Количество: ${item.quantity}</p>
+                        <p>Итого: ${itemPrice} ₽</p>
+                        <button onclick="removeFromBasket(${item.id})">Удалить из корзины</button>
+                    `;
+                    basketItemsDiv.appendChild(itemDiv);
+                }
             });
 
             // Кнопка для оплаты
             const totalDiv = document.createElement('div');
-            totalDiv.innerHTML = `<h3>Общая стоимость: ${totalPrice} ₽</h3>
-                                  <button onclick="payForItems()">Оплатить</button>`;
+            totalDiv.innerHTML = `
+                <h3>Общая стоимость: ${totalPrice} ₽</h3>
+                <button onclick="payForItems()">Оплатить</button>
+            `;
             basketItemsDiv.appendChild(totalDiv);
+        } else {
+            // Если data не является массивом
+            basketItemsDiv.innerHTML = '<p>Ваша корзина пуста</p>';
         }
     })
     .catch(error => {
@@ -65,6 +95,7 @@ function updateBasket() {
         document.getElementById('basket-items').innerHTML = '<p>Ошибка при загрузке корзины.</p>';
     });
 }
+
 
 // Инициализация корзины при загрузке страницы
 document.addEventListener("DOMContentLoaded", function () {

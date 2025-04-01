@@ -377,32 +377,8 @@ form {
     margin: 20px;
 }
 
-.card {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 16px;
-    width: 200px; /* Ширина карточки */
-    text-align: center;
-}
-
-.card:hover {
-    cursor: pointer;
-    background-color: #eee;
-    border-color: #9c131d;
-}
-
 .card:hover .card-fav {
     display: flex;
-}
-
-.card-image-block {
-    position: relative;
-}
-
-.card-image {
-    max-width: 100%;
-    height: auto;
-    border-radius: 5px;
 }
 
 .card-fav {
@@ -415,6 +391,32 @@ form {
     z-index: 6;
 }
 
+
+.card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 16px;
+    width: 200px; /* Ширина карточки */
+    text-align: center;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.card:hover {
+    cursor: pointer;
+    background-color: #eee;
+    border-color: #9c131d;
+}
+
+.card-image-block {
+    position: relative;
+}
+
+.card-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
+
 .card-title {
     font-size: 1.2em;
     margin: 10px 0;
@@ -423,13 +425,6 @@ form {
 .card-price {
     font-size: 1.1em;
     color: #333;
-}
-
-.card-body {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 2;
-    height: 85%;
 }
 
 .card button {
@@ -451,6 +446,31 @@ form {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
+.card-image-small {
+    width: 50px; /* Размер маленького изображения */
+    height: auto; /* Авто высота для сохранения пропорций */
+}
+
+.card-image-large {
+    width: 100px; /* Размер большого изображения */
+    height: auto; /* Авто высота для сохранения пропорций */
+}
+
+.placeholder {
+    width: 50px; /* Размер серого квадрата */
+    height: 50px; /* Размер серого квадрата */
+    background-color: #ccc; /* Цвет фона серого квадрата */
+}
+
+.PerDataLink {
+    transition: 0.3s;
+    margin: 0px;
+}
+
+.PerDataLink:hover {
+    color: #9c131d;
+    transition: 0.3s;
+}
 
 @media screen and (max-width: 748px) {
     header{
@@ -568,5 +588,4 @@ form {
     border: 1px solid #ccc;
     border-radius: 5px;
 }
-
 

@@ -46,16 +46,19 @@ type Good struct {
 }
 
 type Basket struct {
-    ID        int     `json:"id"`
-    Email     string  `json:"email"`
-    Article   string  `json:"article"`
-    Quantity  int     `json:"quantity"`
-    ImageData string  `json:"image_data,omitempty"` // Измените []byte на string
+    ID          int     `json:"id"`
+    Article     string  `json:"article"`
+    Quantity    int     `json:"quantity"`
+    ImageData   string  `json:"imageData"`
+    Name        string  `json:"name"`
+    Price       float64 `json:"price"`
+    Description string  `json:"description"`
+    Photo       string  `json:"photo"`
 }
 
-
 type RequestBody struct {
-    Input string `json:"input"`
+    Input       string   `json:"input"`
+    History     []string `json:"history"`
 }
 
 type GeminiResponse struct {
@@ -741,9 +744,29 @@ func geminiHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
+    // Установка статического значения Instructions
+    instructions := "Ты бот-помощник на сайте интернет магазина, давай краткие, но четкие ответы, не используй выделения текста," +
+        "постарайся решить проблему пользователя не говоря что ты не можешь или не знаешь чего-то, делай выборы за пользователя " +
+        "если ты не можешь подсказать пользователю, то в крайнем случае дай ему мой контакт " +
+        "почты kirill.tsyganov@gmail.com."
+
     // Создаем запрос к серверу Gemini
     geminiURL := "http://blue.fnode.me:25534/generate"
-    jsonData, err := json.Marshal(map[string]string{"prompt": reqBody.Input})
+
+    // Формируем prompt, включая инструкции, историю сообщений и текущее сообщение
+    prompt := fmt.Sprintf(
+        "%s\nВот запрос от пользователя: %s\nВот история сообщений: %s",
+        instructions,
+        reqBody.Input,
+        joinHistory(reqBody.History),
+    )
+
+    // Формируем данные для отправки
+    requestData := map[string]interface{}{
+        "prompt": prompt,
+    }
+
+    jsonData, err := json.Marshal(requestData)
     if err != nil {
         http.Error(w, "Error marshalling request", http.StatusInternalServerError)
         return
@@ -774,6 +797,10 @@ func geminiHandler(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json")
     w.WriteHeader(http.StatusOK)
     w.Write(body)
+}
+
+func joinHistory(history []string) string {
+    return fmt.Sprintf("%s", history) 
 }
 
 func userPageHandler(w http.ResponseWriter, r *http.Request) {
@@ -863,14 +890,7 @@ func addToCartHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 
-type Item struct {
-    ID        int     `json:"id"`
-    Article   string  `json:"article"`
-    Quantity  int     `json:"quantity"`
-    ImageData string  `json:"image_data,omitempty"` // Оставляем как string для base64
-    Name      string  `json:"name"`
-    Price     float64 `json:"price"`
-}
+
 
 func getBasketItemsHandler(w http.ResponseWriter, r *http.Request) {
     session, err := store.Get(r, "session-name")
@@ -881,37 +901,48 @@ func getBasketItemsHandler(w http.ResponseWriter, r *http.Request) {
 
     email := session.Values["userEmail"].(string)
 
-    rows, err := db.Query("SELECT b.id, b.article, b.quantity, b.image_data, g.name, g.price FROM basket b JOIN goods g ON b.article = g.article WHERE b.email = $1", email)
+    // Запрос на получение всех товаров в корзине
+    basketQuery := "SELECT id, article, quantity, image_data FROM basket WHERE email = $1"
+    basketRows, err := db.Query(basketQuery, email)
     if err != nil {
         http.Error(w, "Internal Server Error", http.StatusInternalServerError)
         return
     }
-    defer rows.Close()
+    defer basketRows.Close()
 
-    var items []Item // Используем новую структуру
+    var items []Basket
 
-    for rows.Next() {
-        var item Item // Используем новую структуру для каждого товара
+    for basketRows.Next() {
+        var item Basket
+        var imageData []byte
 
-        // Сканируем данные из строки
-        var imageData []byte // Используем []byte для сканирования
-        if err := rows.Scan(&item.ID, &item.Article, &item.Quantity, &imageData, &item.Name, &item.Price); err != nil {
+        // Сканируем данные из корзины
+        if err := basketRows.Scan(&item.ID, &item.Article, &item.Quantity, &imageData); err != nil {
             http.Error(w, "Internal Server Error", http.StatusInternalServerError)
             return
         }
 
-        // Кодируем изображение в base64, если оно не пустое
-        if len(imageData) > 0 { // Проверяем, что изображение не пустое
-            item.ImageData = base64.StdEncoding.EncodeToString(imageData) // Кодируем изображение в base64
-        } else {
-            item.ImageData = "" // Убедимся, что поле не остается пустым
+        // Получаем информацию о товаре из таблицы goods
+        goodsQuery := "SELECT name, price, description, photo FROM goods WHERE article = $1"
+        var good Good
+        if err := db.QueryRow(goodsQuery, item.Article).Scan(&good.Name, &good.Price, &good.Description, &good.Photo); err != nil {
+            log.Printf("Товар с артикулом %s не найден: %v", item.Article, err)
+            continue // Пропускаем этот товар
         }
 
-        items = append(items, item) // Добавляем товар в список
+        // Заполняем данные о товаре
+        item.ImageData = base64.StdEncoding.EncodeToString(imageData)
+        item.Name = good.Name
+        item.Price = good.Price
+        item.Description = good.Description
+        item.Photo = good.Photo // Заполняем поле photo
+        
+        // Добавляем товар в массив items
+        items = append(items, item)
     }
 
     // Проверка на ошибки после завершения цикла
-    if err := rows.Err(); err != nil {
+    if err := basketRows.Err(); err != nil {
         http.Error(w, "Internal Server Error", http.StatusInternalServerError)
         return
     }

@@ -88,25 +88,7 @@
                 </div>
                 <button @click.prevent="openUserModal">В корзину</button>
             </div>
-        </div>
-        
-        <button @click="toggleChatbot" class="chatbot-toggle-button" v-show="!isChatbotVisible">Чат с ботом</button>
-    
-        <div id="chatbot" class="chatbot" v-show="isChatbotVisible">
-            <div class="chatbot-header">
-                <h2>Чат с ботом</h2>
-                <span class="close" @click="toggleChatbot">&times;</span>
-            </div>
-            <div class="chatbot-messages" ref="messages">
-                <div v-for="message in messages" :key="message.id" :class="{'user-message': message.user, 'bot-message': !message.user}">
-                    {{ message.text }}
-                </div>
-            </div>
-            <div class="chatbot-input">
-                <input type="text" v-model="userInput" @keyup.enter="sendMessage" placeholder="Введите сообщение..."/>
-                <button style="padding: 12px 10px;" @click="sendMessage">Отправить</button>
-            </div>
-        </div>            
+        </div>        
 
         <!-- Дальше идут модальные окна! -->
         <div v-if="isUserModalOpen" class="modal" @mousedown="handleMouseDown" @mouseup="handleMouseUp">
@@ -156,7 +138,6 @@
                         <input type="checkbox" required style="height: 25px; width: 25px;">
                         <p> С <a class="PerDataLink" href="#" @click.prevent="openAgreementModal">порядком</a> обработки персональных данных ознакомлен</p>
                     </div>
-                    
         
                     <button type="submit">Зарегистрироваться</button>
         
@@ -221,7 +202,7 @@
                         В случае, если в течение указанного срока с Заявителем будет заключен договор [наименование договора], настоящее Согласие Заявителя сохраняет силу в течение всего срока действия каждого договора, а также в течение [указать конкретный промежуток времени] с даты прекращения обязательств сторон по договорам. Я уведомлен, что предоставление указанного выше согласия является моим правом, а не обязанностью, данные согласия могут быть отозваны в порядке, предусмотренном законодательством Российской Федерации. Согласие может быть отозвано субъектом персональных данных путем обращения к Оператору с заявлением, оформленным в письменной форме.<br>
                     </p>
                 </div>
-                
+
             </div>
         </div>
     </main>
