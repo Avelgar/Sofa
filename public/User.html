@@ -22,8 +22,22 @@
                     <a style="color:black; margin-right: 15px; border-bottom: 2px solid #9c131d;">Главная</a>
                     <a href="/public/Profile.html">Профиль</a>
                     <a>Избранное</a>
-                    <a href="/public/basket.html">Заказы</a>
+                    <a href="/public/Basket.html">Заказы</a>
                     <a @click.prevent="openExitModal" style="margin-right: 15px;">Выход</a>
+                    <div class="dropdown" style="position: relative;">
+                        <button id="DropdownMenu" class="dropdown-button">Меню</button>
+                        <div id="dropdownMenu" class="dropdown-content" style="display: none;">
+                            <a >Новинки</a>
+                            <a >Каталог</a>
+                            <a @click.prevent="openExitModal" style="margin-right: 15px;">Выход</a>
+                            <a class="highlighted"  >Текущий тираж</a>
+                            <a href="/public/Profile.html">Профиль</a>
+                            <a href="/public/Basket.html">Заказы</a>
+                            <a >Избранное</a>
+                            <a >Оплата</a>
+                            <a >Доставка</a>
+                        </div>
+                    </div>    
                 </div>
             </div>
             <div style="position: relative; display: inline-block;">
@@ -39,8 +53,16 @@
             <a style="text-decoration: underline; color:black"><b>Главная</b></a>
             <a href="/public/Profile.html">Профиль</a>
             <a>Избранное</a>
-            <a href="/public/basket.html">Заказы</a>
+            <a href="/public/Basket.html">Заказы</a>
             <a @click.prevent="openExitModal">Выход</a>
+            <a >Новинки</a>
+            <a >Каталог</a>
+            <a >Текущий тираж</a>
+            <a >Профиль</a>
+            <a >Заказы</a>
+            <a >Избранное</a>
+            <a >Оплата</a>
+            <a >Доставка</a>
         </nav>
     </aside>
     <div id="notifications" class="notifications"></div>
