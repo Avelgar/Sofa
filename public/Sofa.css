@@ -613,5 +613,6 @@ form {
 
 .dropdown-content .highlighted {
     background-color: #9c131d; /* Цвет выделения для текущего тиража */
+    border-radius:5px;
     color: white; /* Цвет текста для выделенного элемента */
 }
