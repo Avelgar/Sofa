@@ -126,15 +126,6 @@ new Vue({
                         this.closeUserModal();
                     }
                 }
-                    if(this.isAgreementModalOpen)
-                        {
-                            this.closeAgreementModal();
-                        }
-                        else
-                        {
-                            this.closeUserModal();
-                        }
-                } 
                 else if (this.isLogInModalOpen) {
                     if(this.isRecoveryModalOpen)
                     {
