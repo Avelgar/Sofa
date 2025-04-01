@@ -3,47 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Корзина</title>
+    <title>Sofa</title>
     <link rel="stylesheet" href="Sofa.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
 </head>
 <body>
-    <h1>Корзина</h1>
-    <div id="basket-items"></div>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            fetch('/api/getBasketItems', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Ошибка при получении товаров из корзины');
-                }
-                return response.json();
-            })
-            .then(data => {
-                const basketItemsDiv = document.getElementById('basket-items');
-                if (data.length === 0) {
-                    basketItemsDiv.innerHTML = '<p>Ваша корзина пуста.</p>';
-                } else {
-                    data.forEach(item => {
-                        const itemDiv = document.createElement('div');
-                        itemDiv.innerHTML = `
-                            <h2>Товар: ${item.article}</h2>
-                            <p>Количество: ${item.quantity}</p>
-                            ${item.image_data ? `<img src="data:image/png;base64,${item.image_data}" alt="${item.article}" style="max-width: 200px;"/>` : ''}
-                        `;
-                        basketItemsDiv.appendChild(itemDiv);
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Ошибка:', error);
-                document.getElementById('basket-items').innerHTML = '<p>Ошибка при загрузке корзины.</p>';
-            });
-        });
-    </script>
+<header>
+    <div class="header-content">
+        <div style="display: flex; align-items: center;">
+            <img src="assets/rose.jpeg" alt="Логотип" class="logo-image" 
+            style="width: 80px; height: auto; margin-right: 20px;">
+            <div class="logo" style="margin-right: 20px;">Sofa</div>
+            <div class="buttons" style="display: flex; align-items: center; margin-right: auto;">
+                <a href="/public/User.html">Назад</a>
+            </div>
+        </div>
+        <div style="position: relative; display: inline-block;">
+            <img src="assets/SearchIcon.png" alt="Поиск" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px;">
+            <input type="text" id="searchInput" placeholder="Поиск..." style="padding-left: 30px;"/>
+        </div>
+        <a id="menuToggle" class="menu-button">Меню</a>
+    </div>
+</header>
+
+<aside id="sidebar" class="sidebar">
+    <nav>
+        <a href="/public/User.html">Назад</a>
+    </nav>
+</aside>
+
+<div id="notifications" class="notifications"></div>
+
+<main>
+    <div id="app">
+        <h2>Корзина</h2>
+        <div id="basket-items" class="symbols-container"></div> <!-- Обновленный класс для контейнера -->
+    </div>
+</main>
+
+
+<footer>
+    <p>&copy; 2025 Sofa. Все права защищены.</p>
+</footer>
+<script src="scripts/Basket.js"></script>
 </body>
 </html>
+
