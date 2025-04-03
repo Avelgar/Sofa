@@ -1,25 +1,29 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const dropdownMenuToggle = document.getElementById('DropdownMenu'); // Измените на правильный ID
+    const dropdownMenuToggle = document.getElementById('DropdownMenu');
     const dropdownMenu = document.getElementById('dropdownMenu');
     const sidebar = document.getElementById('sidebar');
     const menuToggle = document.getElementById('menuToggle');
 
-    menuToggle.addEventListener('click', function() {
-        sidebar.classList.toggle('active');
-    });
+    if (menuToggle) {
+        menuToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('active');
+        });
+    }
+
+    if (dropdownMenuToggle) {
+        dropdownMenuToggle.addEventListener('click', function() {
+            dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+        });
+    }
 
     document.addEventListener('click', function(event) {
-        if (!sidebar.contains(event.target) && !menuToggle.contains(event.target)) {
+        if (sidebar && !sidebar.contains(event.target) && !menuToggle.contains(event.target)) {
             sidebar.classList.remove('active');
         }
 
-        if (!dropdownMenuToggle.contains(event.target) && !dropdownMenu.contains(event.target)) {
+        if (dropdownMenuToggle && !dropdownMenuToggle.contains(event.target) && !dropdownMenu.contains(event.target)) {
             dropdownMenu.style.display = 'none'; // Закрыть меню, если кликнули вне его
         }
-    });
-
-    dropdownMenuToggle.addEventListener('click', function() {
-        dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
     });
 
     const urlParams = new URLSearchParams(window.location.search);

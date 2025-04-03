@@ -1,5 +1,27 @@
 document.addEventListener('DOMContentLoaded', function() {
+    const dropdownMenuToggle = document.getElementById('DropdownMenu'); // Измените на правильный ID
+    const dropdownMenu = document.getElementById('dropdownMenu');
+    const sidebar = document.getElementById('sidebar');
+    const menuToggle = document.getElementById('menuToggle');
 
+    menuToggle.addEventListener('click', function() {
+        sidebar.classList.toggle('active');
+    });
+
+    document.addEventListener('click', function(event) {
+        if (!sidebar.contains(event.target) && !menuToggle.contains(event.target)) {
+            sidebar.classList.remove('active');
+        }
+
+        if (!dropdownMenuToggle.contains(event.target) && !dropdownMenu.contains(event.target)) {
+            dropdownMenu.style.display = 'none'; // Закрыть меню, если кликнули вне его
+        }
+    });
+
+    dropdownMenuToggle.addEventListener('click', function() {
+        dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+    });
+    
     const urlParams = new URLSearchParams(window.location.search);
     const recovery_token = urlParams.get('recovery_token');
 

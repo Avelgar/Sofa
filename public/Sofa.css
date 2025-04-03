@@ -34,6 +34,7 @@ header {
     left: 0;
     right: 0;
     background-color: #ffffff;
+    text-align:center;
     color: black;
     padding: 26px 40px;
     font-size: 1.2em;
@@ -59,8 +60,9 @@ header {
     align-items: center;
 }
 
-.buttons{
+.buttons {
     display: flex;
+    align-items: center;
 }
 
 .nav-button {
@@ -471,9 +473,37 @@ form {
     transition: 0.3s;
 }
 
-@media screen and (max-width: 748px) {
+#how-to-order {
+    text-align: center;
+    margin: 40px 0;
+}
+
+.order-steps {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+.order-step {
+    margin: 20px;
+    text-align: center;
+}
+
+.order-step img {
+    width: 100px; /* или другой размер */
+    height: auto;
+    margin-bottom: 10px;
+}
+
+.dropdown-button{
+    margin-right:1cap;
+}
+
+
+@media screen and (max-width: 860px) {
     header{
         padding: 0px 5px;
+        justify-content: center;
     }
 
     .logo-group {
@@ -496,6 +526,14 @@ form {
 
     .buttons {
         display: none !important; 
+    }
+
+    .dropdown{
+        display: none !important; 
+    }
+
+    #searchInput {
+        flex-grow: 1;
     }
 
     nav{
@@ -568,12 +606,12 @@ form {
 
 .user-message {
     text-align: right;
-    color: blue;
+    color: #000000;
 }
 
 .bot-message {
     text-align: left;
-    color: green;
+    color: #9c131d;
 }
 
 .chatbot-input {
@@ -589,6 +627,7 @@ form {
 }
 
 .dropdown-content {
+    text-align:start;
     display: none; /* Скрыто по умолчанию */
     position: absolute; /* Изменено на absolute для позиционирования под кнопкой */
     background-color: #ffffff;

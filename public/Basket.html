@@ -18,26 +18,30 @@
                 <div class="logo" style="margin-right: 20px;">Sofa</div>
             </div>
             <div class="buttons" style="display: flex; align-items: center; margin-right: auto;">
-                <a href="/public/User.html">Назад</a>
-                <div class="dropdown" style="position: relative;">
-                    <button id="DropdownMenu" class="dropdown-button">Меню</button>
-                    <div id="dropdownMenu" class="dropdown-content" style="display: none;">
-                        <a >Новинки</a>
-                        <a >Каталог</a>
-                        <a >Выход</a>
-                        <a >Текущий тираж</a>
-                        <a >Профиль</a>
-                        <a class="highlighted">Заказы</a>
-                        <a >Избранное</a>
-                        <a >Оплата</a>
-                        <a >Доставка</a>
-                    </div>
-                </div>    
+                <a href="/public/User.html">Главная</a>
+                <a href="/public/Profile.html">Профиль</a>
+                <a style="color:black; margin-right: 15px; border-bottom: 2px solid #9c131d;">Заказы</a>
             </div>
         </div>
-        <div style="position: relative; display: inline-block;">
-            <img src="assets/SearchIcon.png" alt="Поиск" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px;">
-            <input type="text" id="searchInput" placeholder="Поиск..." style="padding-left: 30px;"/>
+        <div style="display: flex; justify-content: center;">
+            <div class="dropdown" style="position: relative;">
+                <button id="DropdownMenu" class="dropdown-button">Меню</button>
+                <div id="dropdownMenu" class="dropdown-content" style="display: none;">
+                    <a @click.prevent="openExitModal" style="margin-right: 15px;">Выход</a>
+                    <a href="/public/User.html">Текущий тираж</a>
+                    <a href="/public/User.html">Избранное</a>
+                    <a href="/public/User.html">Новинки</a>
+                    <a href="/public/User.html">Каталог</a>
+                    <a href="/public/User.html">Оплата</a>
+                    <a href="/public/User.html">Доставка</a>
+                </div>
+            </div>  
+            <div>
+                <div style="position: relative; display: inline-block;">
+                    <img src="assets/SearchIcon.png" alt="Поиск" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px;">
+                    <input type="text" id="searchInput" placeholder="Поиск..." style="padding-left: 30px;"/>
+                </div>
+            </div>
         </div>
         <a id="menuToggle" class="menu-button">Меню</a>
     </div>
